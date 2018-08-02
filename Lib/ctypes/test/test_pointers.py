@@ -63,34 +63,34 @@ class PointersTestCase(unittest.TestCase):
         x.value = -99
         self.assertEqual(res.contents.value, -99)
 
-    def test_callbacks_with_pointers(self):
-        # a function type receiving a pointer
-        PROTOTYPE = CFUNCTYPE(c_int, POINTER(c_int))
+#     def test_callbacks_with_pointers(self):
+#         # a function type receiving a pointer
+#         PROTOTYPE = CFUNCTYPE(c_int, POINTER(c_int))
 
-        self.result = []
+#         self.result = []
 
-        def func(arg):
-            for i in range(10):
-##                print arg[i],
-                self.result.append(arg[i])
-##            print
-            return 0
-        callback = PROTOTYPE(func)
+#         def func(arg):
+#             for i in range(10):
+# ##                print arg[i],
+#                 self.result.append(arg[i])
+# ##            print
+#             return 0
+#         callback = PROTOTYPE(func)
 
-        dll = CDLL(_ctypes_test.__file__)
-        # This function expects a function pointer,
-        # and calls this with an integer pointer as parameter.
-        # The int pointer points to a table containing the numbers 1..10
-        doit = dll._testfunc_callback_with_pointer
+#         dll = CDLL(_ctypes_test.__file__)
+#         # This function expects a function pointer,
+#         # and calls this with an integer pointer as parameter.
+#         # The int pointer points to a table containing the numbers 1..10
+#         doit = dll._testfunc_callback_with_pointer
 
-##        i = c_int(42)
-##        callback(byref(i))
-##        self.assertEqual(i.value, 84)
+# ##        i = c_int(42)
+# ##        callback(byref(i))
+# ##        self.assertEqual(i.value, 84)
 
-        doit(callback)
-##        print self.result
-        doit(callback)
-##        print self.result
+#         doit(callback)
+# ##        print self.result
+#         doit(callback)
+# ##        print self.result
 
     def test_basics(self):
         from operator import delitem

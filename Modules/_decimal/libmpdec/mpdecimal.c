@@ -5458,9 +5458,13 @@ mpd_set_fenv(void)
         _EM_UNDERFLOW|_EM_INEXACT|_RC_CHOP|_PC_64;
     unsigned int mask = _MCW_EM|_MCW_RC|_MCW_PC;
     unsigned int dummy;
-
+#if defined (_M_ARM)
+    _controlfp(0, 0);
+    _controlfp(flags, mask);
+#else
     __control87_2(0, 0, &cw, NULL);
     __control87_2(flags, mask, &dummy, NULL);
+#endif
 #else
     cw = _mpd_get_control87();
     _mpd_set_control87(cw|0xF3F);

@@ -34,16 +34,16 @@ class CallbackTracbackTestCase(unittest.TestCase):
     # created, then a full traceback printed.  When SystemExit is
     # raised in a callback function, the interpreter exits.
 
-    def capture_stderr(self, func, *args, **kw):
-        # helper - call function 'func', and return the captured stderr
-        import io
-        old_stderr = sys.stderr
-        logger = sys.stderr = io.StringIO()
-        try:
-            func(*args, **kw)
-        finally:
-            sys.stderr = old_stderr
-        return logger.getvalue()
+    # def capture_stderr(self, func, *args, **kw):
+    #     # helper - call function 'func', and return the captured stderr
+    #     import io
+    #     old_stderr = sys.stderr
+    #     logger = sys.stderr = io.StringIO()
+    #     try:
+    #         func(*args, **kw)
+    #     finally:
+    #         sys.stderr = old_stderr
+    #     return logger.getvalue()
 
     def test_ValueError(self):
         cb = CFUNCTYPE(c_int, c_int)(callback_func)
