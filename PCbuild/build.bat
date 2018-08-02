@@ -37,6 +37,7 @@ echo.Available flags to avoid building certain modules.
 echo.These flags have no effect if '-e' is not given:
 echo.  --no-ssl      Do not attempt to build _ssl
 echo.  --no-tkinter  Do not attempt to build Tkinter
+echo.  --no-vs       Do not attempt to build _distutils_findvs
 echo.
 echo.Available arguments:
 echo.  -c Release ^| Debug ^| PGInstrument ^| PGUpdate
@@ -83,10 +84,12 @@ if "%~1"=="-e" (set IncludeExternals=true) & shift & goto CheckOpts
 if "%~1"=="-E" (set IncludeExternals=false) & shift & goto CheckOpts
 if "%~1"=="--no-ssl" (set IncludeSSL=false) & shift & goto CheckOpts
 if "%~1"=="--no-tkinter" (set IncludeTkinter=false) & shift & goto CheckOpts
+if "%~1"=="--no-vs" (set IncludeDistUtils_FindVs=false) & shift & goto CheckOpts
 
 if "%IncludeExternals%"=="" set IncludeExternals=true
 if "%IncludeSSL%"=="" set IncludeSSL=true
 if "%IncludeTkinter%"=="" set IncludeTkinter=true
+if "%IncludeDistUtils_FindVs%"=="" set IncludeDistUtils_FindVs=true
 
 if "%IncludeExternals%"=="true" call "%dir%get_externals.bat"
 
@@ -140,6 +143,7 @@ echo on
  /p:Configuration=%conf% /p:Platform=%platf%^
  /p:IncludeExternals=%IncludeExternals%^
  /p:IncludeSSL=%IncludeSSL% /p:IncludeTkinter=%IncludeTkinter%^
+ /p:IncludeDistUtils_FindVs=%IncludeDistUtils_FindVs%^
  /p:UseTestMarker=%UseTestMarker% %GITProperty%^
  %1 %2 %3 %4 %5 %6 %7 %8 %9
 

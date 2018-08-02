@@ -62,4 +62,12 @@
       <Filter>Source Files</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <ARMASM Include="..\Modules\_ctypes\libffi_msvc\arm.asm">
+      <Filter>Source Files</Filter>
+    </ARMASM>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\PC\python_nt.rc" />
+  </ItemGroup>
 </Project>
