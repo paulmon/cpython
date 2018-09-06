@@ -2,6 +2,7 @@ import unittest
 
 from ctypes import *
 import _ctypes_test
+import platform
 
 lib = CDLL(_ctypes_test.__file__)
 
@@ -17,17 +18,18 @@ class LibTest(unittest.TestCase):
         import math
         self.assertEqual(lib.my_sqrt(2.0), math.sqrt(2.0))
 
-    # def test_qsort(self):
-    #     comparefunc = CFUNCTYPE(c_int, POINTER(c_char), POINTER(c_char))
-    #     lib.my_qsort.argtypes = c_void_p, c_size_t, c_size_t, comparefunc
-    #     lib.my_qsort.restype = None
+    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    def test_qsort(self):
+        comparefunc = CFUNCTYPE(c_int, POINTER(c_char), POINTER(c_char))
+        lib.my_qsort.argtypes = c_void_p, c_size_t, c_size_t, comparefunc
+        lib.my_qsort.restype = None
 
-    #     def sort(a, b):
-    #         return three_way_cmp(a[0], b[0])
+        def sort(a, b):
+            return three_way_cmp(a[0], b[0])
 
-    #     chars = create_string_buffer(b"spam, spam, and spam")
-    #     lib.my_qsort(chars, len(chars)-1, sizeof(c_char), comparefunc(sort))
-    #     self.assertEqual(chars.raw, b"   ,,aaaadmmmnpppsss\x00")
+        chars = create_string_buffer(b"spam, spam, and spam")
+        lib.my_qsort(chars, len(chars)-1, sizeof(c_char), comparefunc(sort))
+        self.assertEqual(chars.raw, b"   ,,aaaadmmmnpppsss\x00")
 
 if __name__ == "__main__":
     unittest.main()

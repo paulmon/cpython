@@ -11,6 +11,7 @@ set REBUILD=
 set OUTPUT=
 set PACKAGES=
 set DEBUG=
+set DEBUG_SUFFIX=
 set WINIOT=
 
 :CheckOpts
@@ -19,7 +20,7 @@ if "%~1" EQU "-x86" (set BUILDX86=1) && shift && goto CheckOpts
 if "%~1" EQU "-x64" (set BUILDX64=1) && shift && goto CheckOpts
 if "%~1" EQU "-arm" (set BUILDARM=1) && shift && goto CheckOpts
 if "%~1" EQU "-r" (set REBUILD=-r) && shift && goto CheckOpts
-if "%~1" EQU "-d" (set DEBUG=-d) && shift && goto CheckOpts
+if "%~1" EQU "-d" (set DEBUG=-d && set _SUFFIX=_d) && shift && goto CheckOpts
 if "%~1" EQU "--winiot" (set WINIOT=/p:"WinIoT='true'") && shift && goto CheckOpts
 if "%~1" EQU "-o" (set OUTPUT="/p:OutputPath=%~2") && shift && shift && goto CheckOpts
 if "%~1" EQU "--out" (set OUTPUT="/p:OutputPath=%~2") && shift && shift && goto CheckOpts
@@ -56,10 +57,9 @@ if defined BUILDX64 (
 
 if defined BUILDARM (
     if defined REBUILD ( call "%PCBUILD%build.bat" -p ARM -e %DEBUG% -r --no-tkinter --no-ssl --no-vs
-    ) else if not exist "%Py_OutDir%arm32\python.exe" call "%PCBUILD%build.bat" -p ARM -e %DEBUG% --no-tkinter --no-ssl --no-vs
+    ) else if not exist "%Py_OutDir%arm32\python%_SUFFIX%.exe" call "%PCBUILD%build.bat" -p ARM -e %DEBUG% --no-tkinter --no-ssl --no-vs
     if errorlevel 1 goto :eof
 
-    echo WINIOT = %WINIOT%
     %MSBUILD% "%D%make_pkg.proj" /p:Configuration=%CONFIGURATION% /p:Platform=ARM  /p:"PythonExe=%PCBUILD%amd64\python.exe" %OUTPUT% %PACKAGES% %WINIOT%  
     if errorlevel 1 goto :eof
 )

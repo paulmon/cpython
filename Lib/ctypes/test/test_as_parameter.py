@@ -1,4 +1,5 @@
 import unittest
+import platform
 from ctypes import *
 from ctypes.test import need_symbol
 import _ctypes_test
@@ -50,95 +51,99 @@ class BasicWrapTestCase(unittest.TestCase):
         result = f(self.wrap(p))
         self.assertEqual(result.contents.value, 99)
 
-    # def test_shorts(self):
-    #     f = dll._testfunc_callback_i_if
+    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    def test_shorts(self):
+        f = dll._testfunc_callback_i_if
 
-    #     args = []
-    #     expected = [262144, 131072, 65536, 32768, 16384, 8192, 4096, 2048,
-    #                 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1]
+        args = []
+        expected = [262144, 131072, 65536, 32768, 16384, 8192, 4096, 2048,
+                    1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1]
 
-    #     def callback(v):
-    #         args.append(v)
-    #         return v
+        def callback(v):
+            args.append(v)
+            return v
 
-    #     CallBack = CFUNCTYPE(c_int, c_int)
+        CallBack = CFUNCTYPE(c_int, c_int)
 
-    #     cb = CallBack(callback)
-    #     f(self.wrap(2**18), self.wrap(cb))
-    #     self.assertEqual(args, expected)
+        cb = CallBack(callback)
+        f(self.wrap(2**18), self.wrap(cb))
+        self.assertEqual(args, expected)
 
     ################################################################
 
-    # def test_callbacks(self):
-    #     f = dll._testfunc_callback_i_if
-    #     f.restype = c_int
-    #     f.argtypes = None
+    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    def test_callbacks(self):
+        f = dll._testfunc_callback_i_if
+        f.restype = c_int
+        f.argtypes = None
 
-    #     MyCallback = CFUNCTYPE(c_int, c_int)
+        MyCallback = CFUNCTYPE(c_int, c_int)
 
-    #     def callback(value):
-    #         #print "called back with", value
-    #         return value
+        def callback(value):
+            #print "called back with", value
+            return value
 
-    #     cb = MyCallback(callback)
+        cb = MyCallback(callback)
 
-    #     print("test_callbacks cb", cb)
-    #     result = f(self.wrap(-10), self.wrap(cb))
-    #     self.assertEqual(result, -18)
+        print("test_callbacks cb", cb)
+        result = f(self.wrap(-10), self.wrap(cb))
+        self.assertEqual(result, -18)
 
-    #     # test with prototype
-    #     f.argtypes = [c_int, MyCallback]
-    #     cb = MyCallback(callback)
+        # test with prototype
+        f.argtypes = [c_int, MyCallback]
+        cb = MyCallback(callback)
 
-    #     result = f(self.wrap(-10), self.wrap(cb))
-    #     self.assertEqual(result, -18)
+        result = f(self.wrap(-10), self.wrap(cb))
+        self.assertEqual(result, -18)
 
-    #     result = f(self.wrap(-10), self.wrap(cb))
-    #     self.assertEqual(result, -18)
+        result = f(self.wrap(-10), self.wrap(cb))
+        self.assertEqual(result, -18)
 
-    #     AnotherCallback = CALLBACK_FUNCTYPE(c_int, c_int, c_int, c_int, c_int)
+        AnotherCallback = CALLBACK_FUNCTYPE(c_int, c_int, c_int, c_int, c_int)
 
-    #     # check that the prototype works: we call f with wrong
-    #     # argument types
-    #     cb = AnotherCallback(callback)
-    #     self.assertRaises(ArgumentError, f, self.wrap(-10), self.wrap(cb))
+        # check that the prototype works: we call f with wrong
+        # argument types
+        cb = AnotherCallback(callback)
+        self.assertRaises(ArgumentError, f, self.wrap(-10), self.wrap(cb))
 
-    # def test_callbacks_2(self):
-    #     # Can also use simple datatypes as argument type specifiers
-    #     # for the callback function.
-    #     # In this case the call receives an instance of that type
-    #     f = dll._testfunc_callback_i_if
-    #     f.restype = c_int
+    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    def test_callbacks_2(self):
+        # Can also use simple datatypes as argument type specifiers
+        # for the callback function.
+        # In this case the call receives an instance of that type
+        f = dll._testfunc_callback_i_if
+        f.restype = c_int
 
-    #     MyCallback = CFUNCTYPE(c_int, c_int)
+        MyCallback = CFUNCTYPE(c_int, c_int)
 
-    #     f.argtypes = [c_int, MyCallback]
+        f.argtypes = [c_int, MyCallback]
 
-    #     def callback(value):
-    #         #print "called back with", value
-    #         self.assertEqual(type(value), int)
-    #         return value
+        def callback(value):
+            #print "called back with", value
+            self.assertEqual(type(value), int)
+            return value
 
-    #     cb = MyCallback(callback)
-    #     result = f(self.wrap(-10), self.wrap(cb))
-    #     self.assertEqual(result, -18)
+        cb = MyCallback(callback)
+        result = f(self.wrap(-10), self.wrap(cb))
+        self.assertEqual(result, -18)
 
-    # def test_longlong_callbacks(self):
+    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    def test_longlong_callbacks(self):
 
-    #     f = dll._testfunc_callback_q_qf
-    #     f.restype = c_longlong
+        f = dll._testfunc_callback_q_qf
+        f.restype = c_longlong
 
-    #     MyCallback = CFUNCTYPE(c_longlong, c_longlong)
+        MyCallback = CFUNCTYPE(c_longlong, c_longlong)
 
-    #     f.argtypes = [c_longlong, MyCallback]
+        f.argtypes = [c_longlong, MyCallback]
 
-    #     def callback(value):
-    #         self.assertIsInstance(value, int)
-    #         return value & 0x7FFFFFFF
+        def callback(value):
+            self.assertIsInstance(value, int)
+            return value & 0x7FFFFFFF
 
-    #     cb = MyCallback(callback)
+        cb = MyCallback(callback)
 
-    #     self.assertEqual(13577625587, int(f(self.wrap(1000000000000), self.wrap(cb))))
+        self.assertEqual(13577625587, int(f(self.wrap(1000000000000), self.wrap(cb))))
 
     def test_byval(self):
         # without prototype
@@ -210,7 +215,7 @@ class AsParamWrapper(object):
         self._as_parameter_ = param
 
 class AsParamWrapperTestCase(BasicWrapTestCase):
-   wrap = AsParamWrapper
+    wrap = AsParamWrapper
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -223,7 +228,7 @@ class AsParamPropertyWrapper(object):
     _as_parameter_ = property(getParameter)
 
 class AsParamPropertyWrapperTestCase(BasicWrapTestCase):
-   wrap = AsParamPropertyWrapper
+    wrap = AsParamPropertyWrapper
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

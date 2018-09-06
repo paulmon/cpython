@@ -71,6 +71,7 @@
 
         <Exec Command="$(NugetPackCommand) $(NugetArguments)" />
         <Exec Command="$(NugetPackSymbolsCommand) $(NugetArguments)" Condition="$(NugetPackSymbolsCommand) != ''" />
+        <Message Text="IntermediateOutputPath = $(IntermediateOutputPath)"/>
     </Target>
 
     <Target Name="AfterBuild" />
