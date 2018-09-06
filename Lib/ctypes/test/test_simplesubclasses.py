@@ -1,4 +1,4 @@
-import unittest
+import unittest, platform
 from ctypes import *
 
 class MyInt(c_int):
@@ -13,32 +13,33 @@ class Test(unittest.TestCase):
         self.assertEqual(MyInt(3), MyInt(3))
         self.assertNotEqual(MyInt(42), MyInt(43))
 
-    # def test_ignore_retval(self):
-    #     # Test if the return value of a callback is ignored
-    #     # if restype is None
-    #     proto = CFUNCTYPE(None)
-    #     def func():
-    #         return (1, "abc", None)
+    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    def test_ignore_retval(self):
+        # Test if the return value of a callback is ignored
+        # if restype is None
+        proto = CFUNCTYPE(None)
+        def func():
+            return (1, "abc", None)
 
-    #     cb = proto(func)
-    #     self.assertEqual(None, cb())
+        cb = proto(func)
+        self.assertEqual(None, cb())
 
+    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    def test_int_callback(self):
+        args = []
+        def func(arg):
+            args.append(arg)
+            return arg
 
-    # def test_int_callback(self):
-    #     args = []
-    #     def func(arg):
-    #         args.append(arg)
-    #         return arg
+        cb = CFUNCTYPE(None, MyInt)(func)
 
-    #     cb = CFUNCTYPE(None, MyInt)(func)
+        self.assertEqual(None, cb(42))
+        self.assertEqual(type(args[-1]), MyInt)
 
-    #     self.assertEqual(None, cb(42))
-    #     self.assertEqual(type(args[-1]), MyInt)
+        cb = CFUNCTYPE(c_int, c_int)(func)
 
-    #     cb = CFUNCTYPE(c_int, c_int)(func)
-
-    #     self.assertEqual(42, cb(42))
-    #     self.assertEqual(type(args[-1]), int)
+        self.assertEqual(42, cb(42))
+        self.assertEqual(type(args[-1]), int)
 
     def test_int_struct(self):
         class X(Structure):
