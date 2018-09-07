@@ -39,7 +39,10 @@ FFI_TYPE_POINTER    EQU 14
     ldr   r10, [sp, #36] ; fn
 
     ; Make room for all of the new args.
+    ;mov   r2
     sub   sp, sp, r2
+    ;mov  TODO preserve sp and bic
+    ;;bic   sp, #7
 
     ; Place all of the ffi_prep_args in position
     mov   r0, sp
@@ -55,9 +58,11 @@ FFI_TYPE_POINTER    EQU 14
     ldr   r3, [sp, #12]
 
     ; and adjust stack
+    ; TODO fix 8 byte alignment
     mov   ip, r6
     cmp   ip, #16
     blt   |$L1|
+    ;ble   |$L1|
     movs  ip, #16
 |$L1|
     add   sp, sp, ip
