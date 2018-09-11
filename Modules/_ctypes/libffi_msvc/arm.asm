@@ -39,10 +39,7 @@ FFI_TYPE_POINTER    EQU 14
     ldr   r10, [sp, #36] ; fn
 
     ; Make room for all of the new args.
-    ;mov   r2
     sub   sp, sp, r2
-    ;mov  TODO preserve sp and bic
-    ;;bic   sp, #7
 
     ; Place all of the ffi_prep_args in position
     mov   r0, sp
@@ -332,5 +329,13 @@ call_epilogue
     pop     {pc}
 
     ENDP
+
+    EXPORT |ffi_arm_trampoline|
+
+|ffi_arm_trampoline| PROC
+thisfunc    adr     ip, thisfunc
+            ldr     pc, =closure
+closure     DCD     0
+            ENDP
 
     END

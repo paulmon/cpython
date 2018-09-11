@@ -51,7 +51,7 @@ class BasicWrapTestCase(unittest.TestCase):
         result = f(self.wrap(p))
         self.assertEqual(result.contents.value, 99)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_shorts(self):
         f = dll._testfunc_callback_i_if
 

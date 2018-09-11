@@ -137,10 +137,7 @@ FULL_LAYOUT_DEBUG = [
     ('/', '$build', '{}_d.dll'.format(BASE_NAME), is_not_debug),
     ('DLLs/', '$build', '*.pyd', is_not_debug),
     ('DLLs/', '$build', '*.dll', is_not_debug_or_python),
-    ('include/', 'include', '*.h', None),
-    ('include/', 'PC', 'pyconfig.h', None),
     ('Lib/', 'Lib', '**/*', include_in_lib),
-    ('libs/', '$build', '*.lib', include_in_libs),
     ('Tools/', 'Tools', '**/*', include_in_tools),
 ]
 
