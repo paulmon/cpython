@@ -25,6 +25,7 @@ if "%~1" EQU "--winiot" (set WINIOT=/p:"WinIoT='true'") && shift && goto CheckOp
 if "%~1" EQU "-o" (set OUTPUT="/p:OutputPath=%~2") && shift && shift && goto CheckOpts
 if "%~1" EQU "--out" (set OUTPUT="/p:OutputPath=%~2") && shift && shift && goto CheckOpts
 if "%~1" EQU "-p" (set PACKAGES=%PACKAGES% %~2) && shift && shift && goto CheckOpts
+if "%~1" NEQ "" echo Unknown parameter "%~1" && exit
 
 if not defined BUILDX86 if not defined BUILDX64 if not defined BUILDARM (set BUILDX86=1) && (set BUILDX64=1) && (set BUILDARM=1)
 
