@@ -763,7 +763,9 @@ ffi_prep_closure_loc(ffi_closure * closure,
     memcpy(dest, src, 8);
     //__clear_cache(closure->tramp, closure->tramp + 8);  /* clear data map */
     //__clear_cache(codeloc, (char*)codeloc + 8);         /* clear insn map */
-    *(void(**)(void))(closure->tramp + 8) = closure_func;
+	/* This is important to allow calling the trampoline safely */
+	FlushInstructionCache(GetCurrentProcess(), 0, 0);
+	*(void(**)(void))(closure->tramp + 8) = closure_func;
 
     closure->cif = cif;
     closure->fun = fun;
