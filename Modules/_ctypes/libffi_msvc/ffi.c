@@ -31,6 +31,10 @@
 
 #include <stdlib.h>
 
+#ifdef _M_ARM
+extern unsigned int ffi_arm_trampoline[2];
+#endif
+
 /* ffi_prep_args is called by the assembly routine once stack space
    has been allocated for the function's arguments */
 
@@ -656,6 +660,7 @@ ffi_prep_incoming_args_SYSV(char *stack, void **rvalue,
 /* the cif must already be prep'ed */
 extern void ffi_closure_OUTER();
 
+#ifndef _M_ARM
 ffi_status
 ffi_prep_closure_loc (ffi_closure* closure,
 					  ffi_cif* cif,
@@ -741,3 +746,30 @@ ffi_prep_closure_loc (ffi_closure* closure,
   closure->fun  = fun;
   return FFI_OK;
 }
+#else
+/* the cif must already be prep'ed */
+
+ffi_status
+ffi_prep_closure_loc(ffi_closure * closure,
+    ffi_cif * cif,
+    void(*fun) (ffi_cif *, void *, void **, void *),
+    void *user_data, void *codeloc)
+{
+    void(*closure_func) (void) = (void*)ffi_closure_SYSV;
+
+    memset(&closure->tramp[0], 0xDE, sizeof(closure->tramp));
+    char * dest = closure->tramp;
+    char * src = &ffi_arm_trampoline[0];
+    memcpy(dest, src, 8);
+    //__clear_cache(closure->tramp, closure->tramp + 8);  /* clear data map */
+    //__clear_cache(codeloc, (char*)codeloc + 8);         /* clear insn map */
+    *(void(**)(void))(closure->tramp + 8) = closure_func;
+
+    closure->cif = cif;
+    closure->fun = fun;
+    closure->user_data = user_data;
+
+    return FFI_OK;
+}
+#endif
+
