@@ -22,7 +22,9 @@
    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
    ----------------------------------------------------------------------- */
-
+#ifdef _M_ARM
+#include <fficonfig.h>
+#endif
 #include <ffi.h>
 #include <ffi_common.h>
 #include <stdlib.h>

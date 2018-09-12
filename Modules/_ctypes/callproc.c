@@ -68,6 +68,9 @@
 #include <malloc.h>
 #endif
 
+#ifdef _M_ARM
+#include <fficonfig.h>
+#endif
 #include <ffi.h>
 #include "ctypes.h"
 #ifdef HAVE_ALLOCA_H
@@ -765,7 +768,7 @@ static int _call_function_pointer(int flags,
     }
 
     cc = FFI_DEFAULT_ABI;
-#if defined(MS_WIN32) && !defined(MS_WIN64) && !defined(_WIN32_WCE)
+#if defined(MS_WIN32) && !defined(MS_WIN64) && !defined(_WIN32_WCE) && !defined(_M_ARM)
     if ((flags & FUNCFLAG_CDECL) == 0)
         cc = FFI_STDCALL;
 #endif
@@ -800,7 +803,11 @@ static int _call_function_pointer(int flags,
 #ifndef DONT_USE_SEH
     __try {
 #endif
+#ifdef _M_ARM
+        delta = 0;
+#else
         delta =
+#endif // _M_ARM
 #endif
                 ffi_call(&cif, (void *)pProc, resmem, avalues);
 #ifdef MS_WIN32

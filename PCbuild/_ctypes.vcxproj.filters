@@ -108,16 +108,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ARMASM Include="..\Modules\_ctypes\libffi_msvc\arm.asm">
-      <Filter>Source Files</Filter>
-    </ARMASM>
+    <ARMASM Include="..\Modules\_ctypes\libffi_msvc_arm\sysv.S" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\PC\python_nt.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Modules\_ctypes\libffi_msvc_arm\sysv.S">
-      <Filter>arm</Filter>
-    </None>
   </ItemGroup>
 </Project>

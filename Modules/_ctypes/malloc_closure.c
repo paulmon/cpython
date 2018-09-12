@@ -1,4 +1,7 @@
 #include <Python.h>
+#ifdef _M_ARM
+#include <fficonfig.h>
+#endif
 #include <ffi.h>
 #ifdef MS_WIN32
 #include <windows.h>
