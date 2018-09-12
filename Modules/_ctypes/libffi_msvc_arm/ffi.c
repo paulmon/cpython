@@ -35,6 +35,28 @@
 #include <stdlib.h>
 #include "internal.h"
 
+#ifdef _M_ARM
+   //#pragma warning (disable : 4142)    /* benign redefinition of type */
+#define WIN32_LEAN_AND_MEAN
+//#include <windows.h>
+#define DECLSPEC_IMPORT __declspec(dllimport)
+#define WINBASEAPI DECLSPEC_IMPORT
+#define WINAPI      __stdcall
+#define CONST               const
+typedef int                 BOOL;
+#define far
+typedef CONST void far      *LPCVOID;
+typedef void *HANDLE;
+typedef _W64 unsigned long ULONG_PTR, *PULONG_PTR;
+typedef ULONG_PTR SIZE_T, *PSIZE_T;
+WINBASEAPI BOOL __stdcall FlushInstructionCache(
+    _In_ HANDLE hProcess,
+    _In_reads_bytes_opt_(dwSize) LPCVOID lpBaseAddress,
+    _In_ SIZE_T dwSize
+);
+WINBASEAPI HANDLE WINAPI GetCurrentProcess(VOID);
+#endif
+
 #if FFI_EXEC_TRAMPOLINE_TABLE
 
 #ifdef __MACH__
@@ -782,7 +804,7 @@ place_vfp_arg (ffi_cif *cif, int h)
 	}
       /* Found regs to allocate. */
       cif->vfp_used |= new_used;
-      cif->vfp_args[cif->vfp_nargs++] = reg;
+      cif->vfp_args[cif->vfp_nargs++] = (signed char)reg;
 
       /* Update vfp_reg_free. */
       if (cif->vfp_used & (1 << cif->vfp_reg_free))
@@ -804,7 +826,7 @@ place_vfp_arg (ffi_cif *cif, int h)
 static void
 layout_vfp_args (ffi_cif * cif)
 {
-  int i;
+  unsigned int i;
   /* Init VFP fields */
   cif->vfp_used = 0;
   cif->vfp_nargs = 0;

@@ -31,31 +31,34 @@
 #include <ffi_cfi.h>
 #include "internal.h"
 
-/* GCC 4.8 provides __ARM_ARCH; construct it otherwise.  */
-#ifndef __ARM_ARCH
-# if defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) \
-     || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) \
-     || defined(__ARM_ARCH_7EM__)
-#  define __ARM_ARCH 7
-# elif defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) \
-        || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) \
-        || defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_6T2__) \
-	|| defined(__ARM_ARCH_6M__)
-#  define __ARM_ARCH 6
-# elif defined(__ARM_ARCH_5__) || defined(__ARM_ARCH_5T__) \
-	|| defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5TE__) \
-	|| defined(__ARM_ARCH_5TEJ__)
-#  define __ARM_ARCH 5
-# else
-#  define __ARM_ARCH 4
-# endif
-#endif
+
+;/* GCC 4.8 provides __ARM_ARCH; construct it otherwise.  */
+;#ifndef __ARM_ARCH
+;# if defined(__ARM_ARCH_7__) || defined(__ARM_ARCH_7A__) \
+;     || defined(__ARM_ARCH_7R__) || defined(__ARM_ARCH_7M__) \
+;     || defined(__ARM_ARCH_7EM__)
+;#  define __ARM_ARCH 7
+;# elif defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) \
+;        || defined(__ARM_ARCH_6K__) || defined(__ARM_ARCH_6Z__) \
+;        || defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_6T2__) \
+;	|| defined(__ARM_ARCH_6M__)
+;#  define __ARM_ARCH 6
+;# elif defined(__ARM_ARCH_5__) || defined(__ARM_ARCH_5T__) \
+;	|| defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5TE__) \
+;	|| defined(__ARM_ARCH_5TEJ__)
+;#  define __ARM_ARCH 5
+;# else
+;#  define __ARM_ARCH 4
+;# endif
+;#endif
 
 /* Conditionally compile unwinder directives.  */
 #ifdef __ARM_EABI__
 # define UNWIND(...)	__VA_ARGS__
+#error eabi
 #else
 # define UNWIND(...)
+;#error no eabi
 #endif
 
 #if defined(HAVE_AS_CFI_PSEUDO_OP) && defined(__ARM_EABI__)
@@ -78,39 +81,37 @@
 # define TYPE(X, Y)
 #endif
 
-#define ARM_FUNC_START_LOCAL(name)	\
-	.align	3;			\
-	TYPE(CNAME(name), %function);	\
-	CNAME(name):
+#define __clang__
 
-#define ARM_FUNC_START(name)		\
-	.globl CNAME(name);		\
-	.private_extern CNAME(name);	\
-	FFI_HIDDEN(CNAME(name));	\
-	ARM_FUNC_START_LOCAL(name)
-
-#define ARM_FUNC_END(name) \
-	SIZE(name)
+;#define ARM_FUNC_START_LOCAL(name)	\
+;|name| PROC
+;
+;#define ARM_FUNC_START(name)    \
+;    EXPORT |name|               \
+;|name| PROC
+;
+;#define ARM_FUNC_END(name) \
+;    ENDP ; name
 
 /* Aid in defining a jump table with 8 bytes between entries.  */
 /* ??? The clang assembler doesn't handle .if with symbolic expressions.  */
-#ifdef __clang__
-# define E(index)
-#else
-# define E(index)				\
-	.if . - 0b - 8*index;			\
-	.error "type table out of sync";	\
-	.endif
-#endif
+;#ifdef __clang__
+;# define E(index)
+;#else
+;# define E(index)				\
+;	.if . - 0b - 8*index;			\
+;	.error "type table out of sync";	\
+;	.endif
+;#endif
 
-	.text
-	.syntax unified
-	.arm
+;	.text
+;	.syntax unified
+;	.arm
 
 #ifndef __clang__
 	/* We require interworking on LDM, which implies ARMv5T,
 	   which implies the existance of BLX.  */
- 	.arch	armv5t
+; 	.arch	armv5t
 #endif
 
 	/* Note that we use STC and LDC to encode VFP instructions,
@@ -118,59 +119,59 @@
 	   the object file attributes.  These will not be executed
 	   unless the FFI_VFP abi is used.  */
 
-	@ r0:   stack
-	@ r1:   frame
-	@ r2:   fn
-	@ r3:	vfp_used
 
-ARM_FUNC_START(ffi_call_VFP)
-	UNWIND(.fnstart)
-	cfi_startproc
+    AREA |.text|, CODE, THUMB, READONLY     ; .text
 
-	cmp	r3, #3			@ load only d0 if possible
-#ifdef __clang__
-	vldrle d0, [sp]
-	vldmgt sp, {d0-d7}
-#else
-	ldcle	p11, cr0, [r0]		@ vldrle d0, [sp]
-	ldcgt	p11, cr0, [r0], {16}	@ vldmgt sp, {d0-d7}
-#endif
-	add	r0, r0, #64		@ discard the vfp register args
-	/* FALLTHRU */
-ARM_FUNC_END(ffi_call_VFP)
+	;@ r0:   stack
+	;@ r1:   frame
+	;@ r2:   fn
+	;@ r3:	vfp_used
 
-ARM_FUNC_START(ffi_call_SYSV)
+    EXPORT |ffi_call_VFP|
+|ffi_call_VFP| PROC
+    UNWIND(.fnstart)
+    cfi_startproc
+
+    cmp	r3, #3			; @ load only d0 if possible
+    vldrle d0, [sp]
+    vldmgt sp, {d0-d7}
+    add	r0, r0, #64		; @ discard the vfp register args
+    /* FALLTHRU */
+    ENDP
+
+    EXPORT |ffi_call_SYSV|
+|ffi_call_SYSV| PROC
 	stm	r1, {fp, lr}
 	mov	fp, r1
 
-	@ This is a bit of a lie wrt the origin of the unwind info, but
-	@ now we've got the usual frame pointer and two saved registers.
+	; @ This is a bit of a lie wrt the origin of the unwind info, but
+	; @ now we've got the usual frame pointer and two saved registers.
 	UNWIND(.save {fp,lr})
 	UNWIND(.setfp fp, sp)
 	cfi_def_cfa(fp, 8)
 	cfi_rel_offset(fp, 0)
 	cfi_rel_offset(lr, 4)
 
-	mov	sp, r0		@ install the stack pointer
-	mov	lr, r2		@ move the fn pointer out of the way
-	ldr	ip, [fp, #16]	@ install the static chain
-	ldmia	sp!, {r0-r3}	@ move first 4 parameters in registers.
-	blx	lr		@ call fn
+	mov	sp, r0		; @ install the stack pointer
+	mov	lr, r2		; @ move the fn pointer out of the way
+	ldr	ip, [fp, #16]	; @ install the static chain
+	ldmia	sp!, {r0-r3}	; @ move first 4 parameters in registers.
+	blx	lr		; @ call fn
 
-	@ Load r2 with the pointer to storage for the return value
-	@ Load r3 with the return type code
+	; @ Load r2 with the pointer to storage for the return value
+	; @ Load r3 with the return type code
 	ldr	r2, [fp, #8]
 	ldr	r3, [fp, #12]
 
-	@ Deallocate the stack with the arguments.
+	; @ Deallocate the stack with the arguments.
 	mov	sp, fp
 	cfi_def_cfa_register(sp)
 
-	@ Store values stored in registers.
-	.align	3
-	add	pc, pc, r3, lsl #3
+	; @ Store values stored in registers.
+	; .align	3
+	;add	pc, pc, r3, lsl #3
 	nop
-0:
+/* 0:
 E(ARM_TYPE_VFP_S)
 #ifdef __clang__
 	vstr s0, [r2]
@@ -206,39 +207,45 @@ E(ARM_TYPE_STRUCT)
 
 	cfi_endproc
 	UNWIND(.fnend)
-ARM_FUNC_END(ffi_call_SYSV)
+    */
+    ENDP
 
 
 /*
 	int ffi_closure_inner_* (cif, fun, user_data, frame)
 */
 
-ARM_FUNC_START(ffi_go_closure_SYSV)
+    EXPORT |ffi_go_closure_SYSV|
+|ffi_go_closure_SYSV| PROC
 	cfi_startproc
-	stmdb	sp!, {r0-r3}			@ save argument regs
+	stmdb	sp!, {r0-r3}			; @ save argument regs
 	cfi_adjust_cfa_offset(16)
-	ldr	r0, [ip, #4]			@ load cif
-	ldr	r1, [ip, #8]			@ load fun
-	mov	r2, ip				@ load user_data
-	b	0f
+	ldr	r0, [ip, #4]			; @ load cif
+	ldr	r1, [ip, #8]			; @ load fun
+	mov	r2, ip				; @ load user_data
+	;b	0f
+    b ffi_closure_SYSV_0
 	cfi_endproc
-ARM_FUNC_END(ffi_go_closure_SYSV)
+    ENDP
 
-ARM_FUNC_START(ffi_closure_SYSV)
+    IMPORT |ffi_closure_inner_SYSV|
+    EXPORT |ffi_closure_SYSV|
+|ffi_closure_SYSV| PROC
 	UNWIND(.fnstart)
 	cfi_startproc
-	stmdb	sp!, {r0-r3}			@ save argument regs
+	stmdb	sp!, {r0-r3}			; @ save argument regs
 	cfi_adjust_cfa_offset(16)
 
 #if FFI_EXEC_TRAMPOLINE_TABLE
-	ldr ip, [ip]				@ ip points to the config page, dereference to get the ffi_closure*
+	ldr ip, [ip]				; @ ip points to the config page, dereference to get the ffi_closure*
 #endif
-	ldr	r0, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET]	@ load cif
-	ldr	r1, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  @ load fun
-	ldr	r2, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  @ load user_data
-0:
-	add	ip, sp, #16			@ compute entry sp
-	sub	sp, sp, #64+32			@ allocate frame
+	ldr	r0, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET]	; @ load cif
+	ldr	r1, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; @ load fun
+	ldr	r2, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; @ load user_data
+;0:
+ffi_closure_SYSV_0
+	add	ip, sp, #16			; @ compute entry sp
+	sub	sp, sp, #64+32			; @ allocate frame
 	cfi_adjust_cfa_offset(64+32)
 	stmdb	sp!, {ip,lr}
 
@@ -249,49 +256,53 @@ ARM_FUNC_START(ffi_closure_SYSV)
 	cfi_adjust_cfa_offset(8)
 	cfi_rel_offset(lr, 4)
 
-	add	r3, sp, #8			@ load frame
+	add	r3, sp, #8			; @ load frame
 	bl	CNAME(ffi_closure_inner_SYSV)
 
-	@ Load values returned in registers.
-	add	r2, sp, #8+64			@ load result
+	; @ Load values returned in registers.
+	add	r2, sp, #8+64			; @ load result
 	adr	r3, CNAME(ffi_closure_ret)
 	add	pc, r3, r0, lsl #3
 	cfi_endproc
 	UNWIND(.fnend)
-ARM_FUNC_END(ffi_closure_SYSV)
+    ENDP
 
-ARM_FUNC_START(ffi_go_closure_VFP)
+    EXPORT |ffi_go_closure_VFP|
+|ffi_go_closure_VFP| PROC
 	cfi_startproc
-	stmdb	sp!, {r0-r3}			@ save argument regs
+	stmdb	sp!, {r0-r3}			; @ save argument regs
 	cfi_adjust_cfa_offset(16)
-	ldr	r0, [ip, #4]			@ load cif
-	ldr	r1, [ip, #8]			@ load fun
-	mov	r2, ip				@ load user_data
-	b	0f
+	ldr	r0, [ip, #4]			; @ load cif
+	ldr	r1, [ip, #8]			; @ load fun
+	mov	r2, ip				; @ load user_data
+;	b	ffi_go_closure_VFP_0
 	cfi_endproc
-ARM_FUNC_END(ffi_go_closure_VFP)
+    ENDP
 
-ARM_FUNC_START(ffi_closure_VFP)
+    IMPORT |ffi_closure_inner_VFP|
+    EXPORT |ffi_closure_VFP|
+|ffi_closure_VFP| PROC
 	UNWIND(.fnstart)
 	cfi_startproc
-	stmdb	sp!, {r0-r3}			@ save argument regs
+	stmdb	sp!, {r0-r3}			; @ save argument regs
 	cfi_adjust_cfa_offset(16)
 
 #if FFI_EXEC_TRAMPOLINE_TABLE
-	ldr ip, [ip]				@ ip points to the config page, dereference to get the ffi_closure*
+	ldr ip, [ip]				; @ ip points to the config page, dereference to get the ffi_closure*
 #endif
-	ldr	r0, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET]	@ load cif
-	ldr	r1, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  @ load fun
-	ldr	r2, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  @ load user_data
-0:
+	ldr	r0, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET]	; @ load cif
+	ldr	r1, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; @ load fun
+	ldr	r2, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; @ load user_data
+;0:
+ffi_go_closure_VFP_0
 	add	ip, sp, #16
-	sub	sp, sp, #64+32			@ allocate frame
+	sub	sp, sp, #64+32			; @ allocate frame
 	cfi_adjust_cfa_offset(64+32)
-#ifdef __clang__
+;#ifdef __clang__
 	vstm sp, {d0-d7}
-#else
-	stc	p11, cr0, [sp], {16}		@ vstm sp, {d0-d7}
-#endif
+;#else
+;	stc	p11, cr0, [sp], {16}		; @ vstm sp, {d0-d7}
+;#endif
 	stmdb	sp!, {ip,lr}
 
 	/* See above.  */
@@ -299,45 +310,46 @@ ARM_FUNC_START(ffi_closure_VFP)
 	cfi_adjust_cfa_offset(8)
 	cfi_rel_offset(lr, 4)
 
-	add	r3, sp, #8			@ load frame
+	add	r3, sp, #8			; @ load frame
 	bl	CNAME(ffi_closure_inner_VFP)
 
-	@ Load values returned in registers.
-	add	r2, sp, #8+64			@ load result
+	; @ Load values returned in registers.
+	add	r2, sp, #8+64			; @ load result
 	adr	r3, CNAME(ffi_closure_ret)
 	add	pc, r3, r0, lsl #3
 	cfi_endproc
 	UNWIND(.fnend)
-ARM_FUNC_END(ffi_closure_VFP)
+    ENDP
 
 /* Load values returned in registers for both closure entry points.
    Note that we use LDM with SP in the register set.  This is deprecated
    by ARM, but not yet unpredictable.  */
 
-ARM_FUNC_START_LOCAL(ffi_closure_ret)
+    EXPORT |ffi_closure_ret|
+|ffi_closure_ret| PROC
 	cfi_startproc
 	cfi_rel_offset(sp, 0)
 	cfi_rel_offset(lr, 4)
-0:
+/*0:
 E(ARM_TYPE_VFP_S)
 #ifdef __clang__
 	vldr s0, [r2]
 #else
-	ldc	p10, cr0, [r2]			@ vldr s0, [r2]
+	ldc	p10, cr0, [r2]			; @ vldr s0, [r2]
 #endif
 	ldm	sp, {sp,pc}
 E(ARM_TYPE_VFP_D)
 #ifdef __clang__
 	vldr d0, [r2]
 #else
-	ldc	p11, cr0, [r2]			@ vldr d0, [r2]
+	ldc	p11, cr0, [r2]			; @ vldr d0, [r2]
 #endif
 	ldm	sp, {sp,pc}
 E(ARM_TYPE_VFP_N)
 #ifdef __clang__
 	vldm r2, {d0-d3}
 #else
-	ldc	p11, cr0, [r2], {8}		@ vldm r2, {d0-d3}
+	ldc	p11, cr0, [r2], {8}		; @ vldm r2, {d0-d3}
 #endif
 	ldm	sp, {sp,pc}
 E(ARM_TYPE_INT64)
@@ -352,7 +364,8 @@ E(ARM_TYPE_VOID)
 E(ARM_TYPE_STRUCT)
 	ldm	sp, {sp,pc}
 	cfi_endproc
-ARM_FUNC_END(ffi_closure_ret)
+    */
+    ENDP
 
 #if FFI_EXEC_TRAMPOLINE_TABLE
 
@@ -360,25 +373,33 @@ ARM_FUNC_END(ffi_closure_ret)
 #include <mach/machine/vm_param.h>
 
 .align	PAGE_MAX_SHIFT
-ARM_FUNC_START(ffi_closure_trampoline_table_page)
+    EXPORT |ffi_closure_trampoline_table_page|
+|ffi_closure_trampoline_table_page| PROC
 .rept	PAGE_MAX_SIZE / FFI_TRAMPOLINE_SIZE
-	adr ip, #-PAGE_MAX_SIZE   @ the config page is PAGE_MAX_SIZE behind the trampoline page
-	sub ip, #8				  @ account for pc bias
-	ldr	pc, [ip, #4]		  @ jump to ffi_closure_SYSV or ffi_closure_VFP
+	adr ip, #-PAGE_MAX_SIZE   ; @ the config page is PAGE_MAX_SIZE behind the trampoline page
+	sub ip, #8				  ; @ account for pc bias
+	ldr	pc, [ip, #4]		  ; @ jump to ffi_closure_SYSV or ffi_closure_VFP
 .endr
 ARM_FUNC_END(ffi_closure_trampoline_table_page)
 #endif
 
 #else
 
-ARM_FUNC_START(ffi_arm_trampoline)
-0:	adr	ip, 0b
-	ldr	pc, 1f
-1:	.long	0
-ARM_FUNC_END(ffi_arm_trampoline)
+    EXPORT |ffi_arm_trampoline|
+|ffi_arm_trampoline| PROC
+;0:	adr	ip, 0b
+ffi_arm_trampoline_0
+    adr	ip, ffi_arm_trampoline_0
+;	ldr	pc, 1f
+;1:	.long	0
+    ldr	pc, ffi_arm_trampoline_1
+ffi_arm_trampoline_1
+    DCD     0
+    ENDP
 
 #endif /* FFI_EXEC_TRAMPOLINE_TABLE */
 
 #if defined __ELF__ && defined __linux__
 	.section	.note.GNU-stack,"",%progbits
 #endif
+    END

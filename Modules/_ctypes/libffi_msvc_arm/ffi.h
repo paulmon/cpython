@@ -132,8 +132,10 @@ typedef struct _ffi_type
 #if defined _MSC_VER
 # if defined FFI_BUILDING_DLL /* Building libffi.DLL with msvcc.sh */
 #  define FFI_API __declspec(dllexport)
+#error FFI_BUILDING_DLL should not be defined
 # elif !defined FFI_BUILDING  /* Importing libffi.DLL */
 #  define FFI_API __declspec(dllimport)
+#error FFI_BUILDING should be defined
 # else                        /* Building/linking static library */
 #  define FFI_API
 # endif

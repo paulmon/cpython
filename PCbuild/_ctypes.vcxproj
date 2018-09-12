@@ -127,7 +127,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\prep_cif.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\raw_api.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
@@ -162,12 +162,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ARMASM Include="..\Modules\_ctypes\libffi_msvc\arm.asm">
-      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-    </ARMASM>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="..\PC\python_nt.rc" />
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +170,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Modules\_ctypes\libffi_msvc_arm\sysv.S">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-    </None>
+    <ARMASM Include="..\Modules\_ctypes\libffi_msvc_arm\sysv.S">
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
+    </ARMASM>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
