@@ -2,7 +2,7 @@
    ffi.c - Copyright (c) 2011 Timothy Wall
            Copyright (c) 2011 Plausible Labs Cooperative, Inc.
            Copyright (c) 2011 Anthony Green
-	   Copyright (c) 2011 Free Software Foundation
+       Copyright (c) 2011 Free Software Foundation
            Copyright (c) 1998, 2008, 2011  Red Hat, Inc.
 
    ARM Foreign Function Interface
@@ -110,9 +110,14 @@ ffi_put_arg (ffi_type *ty, void *src, void *dst)
     case FFI_TYPE_SINT32:
     case FFI_TYPE_UINT32:
     case FFI_TYPE_POINTER:
-    case FFI_TYPE_FLOAT:
+    //case FFI_TYPE_FLOAT:
       *(UINT32 *)dst = *(UINT32 *)src;
       break;
+
+    case FFI_TYPE_FLOAT:
+        *(uintptr_t *)dst = 0;
+        *(float *)dst = *(float *)src;
+        break;
 
     case FFI_TYPE_SINT64:
     case FFI_TYPE_UINT64:
@@ -141,7 +146,7 @@ ffi_put_arg (ffi_type *ty, void *src, void *dst)
 */
 static void
 ffi_prep_args_SYSV (ffi_cif *cif, int flags, void *rvalue,
-		    void **avalue, char *argp)
+            void **avalue, char *argp)
 {
   ffi_type **arg_types = cif->arg_types;
   int i, n;
@@ -191,39 +196,39 @@ ffi_prep_args_VFP (ffi_cif *cif, int flags, void *rvalue,
 
       /* Allocated in VFP registers. */
       if (vi < cif->vfp_nargs && is_vfp_type)
-	{
-	  char *vfp_slot = vfp_space + cif->vfp_args[vi++] * 4;
-	  ffi_put_arg (ty, a, vfp_slot);
-	  continue;
-	}
+    {
+      char *vfp_slot = vfp_space + cif->vfp_args[vi++] * 4;
+      ffi_put_arg (ty, a, vfp_slot);
+      continue;
+    }
       /* Try allocating in core registers. */
       else if (!done_with_regs && !is_vfp_type)
-	{
-	  char *tregp = ffi_align (ty, regp);
-	  size_t size = ty->size;
-	  size = (size < 4) ? 4 : size;	// pad
-	  /* Check if there is space left in the aligned register
-	     area to place the argument.  */
-	  if (tregp + size <= eo_regp)
-	    {
-	      regp = tregp + ffi_put_arg (ty, a, tregp);
-	      done_with_regs = (regp == argp);
-	      // ensure we did not write into the stack area
-	      FFI_ASSERT (regp <= argp);
-	      continue;
-	    }
-	  /* In case there are no arguments in the stack area yet,
-	     the argument is passed in the remaining core registers
-	     and on the stack.  */
-	  else if (!stack_used)
-	    {
-	      stack_used = 1;
-	      done_with_regs = 1;
-	      argp = tregp + ffi_put_arg (ty, a, tregp);
-	      FFI_ASSERT (eo_regp < argp);
-	      continue;
-	    }
-	}
+    {
+      char *tregp = ffi_align (ty, regp);
+      size_t size = ty->size;
+      size = (size < 4) ? 4 : size;	// pad
+      /* Check if there is space left in the aligned register
+         area to place the argument.  */
+      if (tregp + size <= eo_regp)
+        {
+          regp = tregp + ffi_put_arg (ty, a, tregp);
+          done_with_regs = (regp == argp);
+          // ensure we did not write into the stack area
+          FFI_ASSERT (regp <= argp);
+          continue;
+        }
+      /* In case there are no arguments in the stack area yet,
+         the argument is passed in the remaining core registers
+         and on the stack.  */
+      else if (!stack_used)
+        {
+          stack_used = 1;
+          done_with_regs = 1;
+          argp = tregp + ffi_put_arg (ty, a, tregp);
+          FFI_ASSERT (eo_regp < argp);
+          continue;
+        }
+    }
       /* Base case, arguments are passed on the stack */
       stack_used = 1;
       argp = ffi_align (ty, argp);
@@ -278,29 +283,29 @@ ffi_prep_cif_machdep (ffi_cif *cif)
     case FFI_TYPE_STRUCT:
     case FFI_TYPE_COMPLEX:
       if (cabi == FFI_VFP)
-	{
-	  int h = vfp_type_p (cif->rtype);
+    {
+      int h = vfp_type_p (cif->rtype);
 
-	  flags = ARM_TYPE_VFP_N;
-	  if (h == 0x100 + FFI_TYPE_FLOAT)
-	    flags = ARM_TYPE_VFP_S;
-	  if (h == 0x100 + FFI_TYPE_DOUBLE)
-	    flags = ARM_TYPE_VFP_D;
-	  if (h != 0)
-	      break;
-	}
+      flags = ARM_TYPE_VFP_N;
+      if (h == 0x100 + FFI_TYPE_FLOAT)
+        flags = ARM_TYPE_VFP_S;
+      if (h == 0x100 + FFI_TYPE_DOUBLE)
+        flags = ARM_TYPE_VFP_D;
+      if (h != 0)
+          break;
+    }
 
       /* A Composite Type not larger than 4 bytes is returned in r0.
-	 A Composite Type larger than 4 bytes, or whose size cannot
-	 be determined statically ... is stored in memory at an
-	 address passed [in r0].  */
+     A Composite Type larger than 4 bytes, or whose size cannot
+     be determined statically ... is stored in memory at an
+     address passed [in r0].  */
       if (cif->rtype->size <= 4)
-	flags = ARM_TYPE_INT;
+    flags = ARM_TYPE_INT;
       else
-	{
-	  flags = ARM_TYPE_STRUCT;
-	  bytes += 4;
-	}
+    {
+      flags = ARM_TYPE_STRUCT;
+      bytes += 4;
+    }
       break;
 
     default:
@@ -325,7 +330,7 @@ ffi_prep_cif_machdep (ffi_cif *cif)
 /* Perform machine dependent cif processing for variadic calls */
 ffi_status
 ffi_prep_cif_machdep_var (ffi_cif * cif,
-			  unsigned int nfixedargs, unsigned int ntotalargs)
+              unsigned int nfixedargs, unsigned int ntotalargs)
 {
   /* VFP variadic calls actually use the SYSV ABI */
   if (cif->abi == FFI_VFP)
@@ -346,13 +351,13 @@ struct call_frame
 };
 
 extern void ffi_call_SYSV (void *stack, struct call_frame *,
-			   void (*fn) (void)) FFI_HIDDEN;
+               void (*fn) (void)) FFI_HIDDEN;
 extern void ffi_call_VFP (void *vfp_space, struct call_frame *,
-			   void (*fn) (void), unsigned vfp_used) FFI_HIDDEN;
+               void (*fn) (void), unsigned vfp_used) FFI_HIDDEN;
 
 static void
 ffi_call_int (ffi_cif * cif, void (*fn) (void), void *rvalue,
-	      void **avalue, void *closure)
+          void **avalue, void *closure)
 {
   int flags = cif->flags;
   ffi_type *rtype = cif->rtype;
@@ -364,12 +369,12 @@ ffi_call_int (ffi_cif * cif, void (*fn) (void), void *rvalue,
   if (rvalue == NULL)
     {
       /* If the return value is a struct and we don't have a return
-	 value address then we need to make one.  Otherwise the return
-	 value is in registers and we can ignore them.  */
+     value address then we need to make one.  Otherwise the return
+     value is in registers and we can ignore them.  */
       if (flags == ARM_TYPE_STRUCT)
-	rsize = rtype->size;
+    rsize = rtype->size;
       else
-	flags = ARM_TYPE_VOID;
+    flags = ARM_TYPE_VOID;
     }
   else if (flags == ARM_TYPE_VFP_N)
     {
@@ -425,14 +430,14 @@ ffi_call (ffi_cif *cif, void (*fn) (void), void *rvalue, void **avalue)
 
 void
 ffi_call_go (ffi_cif *cif, void (*fn) (void), void *rvalue,
-	     void **avalue, void *closure)
+         void **avalue, void *closure)
 {
   ffi_call_int (cif, fn, rvalue, avalue, closure);
 }
 
 static void *
 ffi_prep_incoming_args_SYSV (ffi_cif *cif, void *rvalue,
-			     char *argp, void **avalue)
+                 char *argp, void **avalue)
 {
   ffi_type **arg_types = cif->arg_types;
   int i, n;
@@ -463,7 +468,7 @@ ffi_prep_incoming_args_SYSV (ffi_cif *cif, void *rvalue,
 
 static void *
 ffi_prep_incoming_args_VFP (ffi_cif *cif, void *rvalue, char *stack,
-			    char *vfp_space, void **avalue)
+                char *vfp_space, void **avalue)
 {
   ffi_type **arg_types = cif->arg_types;
   int i, n, vi = 0;
@@ -487,40 +492,40 @@ ffi_prep_incoming_args_VFP (ffi_cif *cif, void *rvalue, char *stack,
       size_t z = ty->size;
 
       if (vi < cif->vfp_nargs && is_vfp_type)
-	{
-	  avalue[i] = vfp_space + cif->vfp_args[vi++] * 4;
-	  continue;
-	}
+    {
+      avalue[i] = vfp_space + cif->vfp_args[vi++] * 4;
+      continue;
+    }
       else if (!done_with_regs && !is_vfp_type)
-	{
-	  char *tregp = ffi_align (ty, regp);
+    {
+      char *tregp = ffi_align (ty, regp);
 
-	  z = (z < 4) ? 4 : z;	// pad
+      z = (z < 4) ? 4 : z;	// pad
 
-	  /* If the arguments either fits into the registers or uses registers
-	     and stack, while we haven't read other things from the stack */
-	  if (tregp + z <= eo_regp || !stack_used)
-	    {
-	      /* Because we're little endian, this is what it turns into.  */
-	      avalue[i] = (void *) tregp;
-	      regp = tregp + z;
+      /* If the arguments either fits into the registers or uses registers
+         and stack, while we haven't read other things from the stack */
+      if (tregp + z <= eo_regp || !stack_used)
+        {
+          /* Because we're little endian, this is what it turns into.  */
+          avalue[i] = (void *) tregp;
+          regp = tregp + z;
 
-	      /* If we read past the last core register, make sure we
-		 have not read from the stack before and continue
-		 reading after regp.  */
-	      if (regp > eo_regp)
-		{
-		  FFI_ASSERT (!stack_used);
-		  argp = regp;
-		}
-	      if (regp >= eo_regp)
-		{
-		  done_with_regs = 1;
-		  stack_used = 1;
-		}
-	      continue;
-	    }
-	}
+          /* If we read past the last core register, make sure we
+         have not read from the stack before and continue
+         reading after regp.  */
+          if (regp > eo_regp)
+        {
+          FFI_ASSERT (!stack_used);
+          argp = regp;
+        }
+          if (regp >= eo_regp)
+        {
+          done_with_regs = 1;
+          stack_used = 1;
+        }
+          continue;
+        }
+    }
 
       stack_used = 1;
       argp = ffi_align (ty, argp);
@@ -540,26 +545,26 @@ struct closure_frame
 
 int FFI_HIDDEN
 ffi_closure_inner_SYSV (ffi_cif *cif,
-		        void (*fun) (ffi_cif *, void *, void **, void *),
-		        void *user_data,
-		        struct closure_frame *frame)
+                void (*fun) (ffi_cif *, void *, void **, void *),
+                void *user_data,
+                struct closure_frame *frame)
 {
   void **avalue = (void **) alloca (cif->nargs * sizeof (void *));
   void *rvalue = ffi_prep_incoming_args_SYSV (cif, frame->result,
-					      frame->argp, avalue);
+                          frame->argp, avalue);
   fun (cif, rvalue, avalue, user_data);
   return cif->flags;
 }
 
 int FFI_HIDDEN
 ffi_closure_inner_VFP (ffi_cif *cif,
-		       void (*fun) (ffi_cif *, void *, void **, void *),
-		       void *user_data,
-		       struct closure_frame *frame)
+               void (*fun) (ffi_cif *, void *, void **, void *),
+               void *user_data,
+               struct closure_frame *frame)
 {
   void **avalue = (void **) alloca (cif->nargs * sizeof (void *));
   void *rvalue = ffi_prep_incoming_args_VFP (cif, frame->result, frame->argp,
-					     frame->vfp_space, avalue);
+                         frame->vfp_space, avalue);
   fun (cif, rvalue, avalue, user_data);
   return cif->flags;
 }
@@ -573,9 +578,9 @@ void ffi_go_closure_VFP (void) FFI_HIDDEN;
 
 ffi_status
 ffi_prep_closure_loc (ffi_closure * closure,
-		      ffi_cif * cif,
-		      void (*fun) (ffi_cif *, void *, void **, void *),
-		      void *user_data, void *codeloc)
+              ffi_cif * cif,
+              void (*fun) (ffi_cif *, void *, void **, void *),
+              void *user_data, void *codeloc)
 {
   void (*closure_func) (void) = ffi_closure_SYSV;
 
@@ -583,7 +588,7 @@ ffi_prep_closure_loc (ffi_closure * closure,
     {
       /* We only need take the vfp path if there are vfp arguments.  */
       if (cif->vfp_used)
-	closure_func = ffi_closure_VFP;
+    closure_func = ffi_closure_VFP;
     }
   else if (cif->abi != FFI_SYSV)
     return FFI_BAD_ABI;
@@ -598,8 +603,6 @@ ffi_prep_closure_loc (ffi_closure * closure,
   msync(closure->tramp, 8, 0x1000000);	/* clear data map */
   msync(codeloc, 8, 0x1000000);	/* clear insn map */
 #else
-  //__clear_cache(closure->tramp, closure->tramp + 8);	/* clear data map */
-  //__clear_cache(codeloc, codeloc + 8);			/* clear insn map */
   FlushInstructionCache(GetCurrentProcess(), 0, 0);
 #endif
   *(void (**)(void))(closure->tramp + 8) = closure_func;
@@ -608,28 +611,6 @@ ffi_prep_closure_loc (ffi_closure * closure,
   closure->cif = cif;
   closure->fun = fun;
   closure->user_data = user_data;
-
-  return FFI_OK;
-}
-
-ffi_status
-ffi_prep_go_closure (ffi_go_closure *closure, ffi_cif *cif,
-		     void (*fun) (ffi_cif *, void *, void **, void *))
-{
-  void (*closure_func) (void) = ffi_go_closure_SYSV;
-
-  if (cif->abi == FFI_VFP)
-    {
-      /* We only need take the vfp path if there are vfp arguments.  */
-      if (cif->vfp_used)
-	closure_func = ffi_go_closure_VFP;
-    }
-  else if (cif->abi != FFI_SYSV)
-    return FFI_BAD_ABI;
-
-  closure->tramp = closure_func;
-  closure->cif = cif;
-  closure->fun = fun;
 
   return FFI_OK;
 }
@@ -714,7 +695,7 @@ vfp_type_p (const ffi_type *ty)
     case FFI_TYPE_COMPLEX:
       candidate = ty->elements[0]->type;
       if (candidate != FFI_TYPE_FLOAT && candidate != FFI_TYPE_DOUBLE)
-	return 0;
+    return 0;
       ele_count = 2;
       goto done;
     case FFI_TYPE_STRUCT:
@@ -794,26 +775,26 @@ place_vfp_arg (ffi_cif *cif, int h)
     {
       int s, new_used = 0;
       for (s = reg; s < reg + nregs; s++)
-	{
-	  new_used |= (1 << s);
-	  if (cif->vfp_used & (1 << s))
-	    {
-	      reg += align;
-	      goto next_reg;
-	    }
-	}
+    {
+      new_used |= (1 << s);
+      if (cif->vfp_used & (1 << s))
+        {
+          reg += align;
+          goto next_reg;
+        }
+    }
       /* Found regs to allocate. */
       cif->vfp_used |= new_used;
       cif->vfp_args[cif->vfp_nargs++] = (signed char)reg;
 
       /* Update vfp_reg_free. */
       if (cif->vfp_used & (1 << cif->vfp_reg_free))
-	{
-	  reg += nregs;
-	  while (cif->vfp_used & (1 << reg))
-	    reg += 1;
-	  cif->vfp_reg_free = reg;
-	}
+    {
+      reg += nregs;
+      while (cif->vfp_used & (1 << reg))
+        reg += 1;
+      cif->vfp_reg_free = reg;
+    }
       return 0;
     next_reg:;
     }
@@ -837,6 +818,6 @@ layout_vfp_args (ffi_cif * cif)
     {
       int h = vfp_type_p (cif->arg_types[i]);
       if (h && place_vfp_arg (cif, h) == 1)
-	break;
+    break;
     }
 }

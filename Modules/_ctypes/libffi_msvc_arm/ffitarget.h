@@ -43,7 +43,7 @@ typedef enum ffi_abi {
   FFI_SYSV,
   FFI_VFP,
   FFI_LAST_ABI,
-#ifdef __ARM_PCS_VFP
+#if defined(__ARM_PCS_VFP) || defined(_M_ARM)
   FFI_DEFAULT_ABI = FFI_VFP,
 #else
   FFI_DEFAULT_ABI = FFI_SYSV,
