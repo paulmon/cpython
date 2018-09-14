@@ -540,6 +540,9 @@ struct closure_frame
 {
   char vfp_space[8*8] __attribute__((aligned(8)));
   char result[8*4];
+//#ifdef _M_ARM
+//  char r4_lr[24];
+//#endif
   char argp[];
 };
 
@@ -593,20 +596,22 @@ ffi_prep_closure_loc (ffi_closure * closure,
   else if (cif->abi != FFI_SYSV)
     return FFI_BAD_ABI;
 
-#if FFI_EXEC_TRAMPOLINE_TABLE
-  void **config = (void **)((uint8_t *)codeloc - PAGE_MAX_SIZE);
-  config[0] = closure;
-  config[1] = closure_func;
-#else
-  memcpy (closure->tramp, ffi_arm_trampoline, 8);
-#if defined (__QNX__)
-  msync(closure->tramp, 8, 0x1000000);	/* clear data map */
-  msync(codeloc, 8, 0x1000000);	/* clear insn map */
-#else
+  //memcpy (closure->tramp, ffi_arm_trampoline, 8);
+  char *tramp = &closure->tramp[0];
+
+#define BYTES(text) memcpy(tramp, text, sizeof(text)), tramp += sizeof(text)-1
+#define POINTER(x) *(void**)tramp = (void*)(x), tramp += sizeof(void*)
+#define SHORT(x) *(short*)tramp = x, tramp += sizeof(short)
+#define INT(x) *(int*)tramp = x, tramp += sizeof(int)
+
+  /* af f2 04 03   adr r3, ffi_arm_trampoline (copy &closure to r3) */
+  BYTES("\xAF\xF2\x04\x03");
+
+  /*df f8 01 f0   ldr pc, closure_func*/
+  BYTES("\xDF\xF8\x00\xF0");
+  POINTER(closure_func);
+
   FlushInstructionCache(GetCurrentProcess(), 0, 0);
-#endif
-  *(void (**)(void))(closure->tramp + 8) = closure_func;
-#endif
 
   closure->cif = cif;
   closure->fun = fun;
