@@ -31,32 +31,22 @@
 #include <ffi_cfi.h>
 #include "internal.h"
 
-/* Aid in defining a jump table with 8 bytes between entries.  */
-/* ??? The clang assembler doesn't handle .if with symbolic expressions.  */
-;#ifdef __clang__
-;# define E(index)
-;#else
-;# define E(index)                      \
-;    .if . - 0b - 8*index;              \
-;    .error "type table out of sync";   \
-;    .endif
-;#endif
-
     AREA |.text|, CODE, THUMB, READONLY     ; .text
 
-    ;@ r0:   stack
-    ;@ r1:   frame
-    ;@ r2:   fn
-    ;@ r3:    vfp_used
 
     EXPORT |ffi_call_VFP|
+    ; r0:   stack
+    ; r1:   frame
+    ; r2:   fn
+    ; r3:   vfp_used
+
 |ffi_call_VFP| PROC
     cmp    r3, #3            ; load only d0 if possible
     vldrle d0, [r0]
     vldmgt r0, {d0-d7}
     add    r0, r0, #64        ; discard the vfp register args
     /* FALLTHRU */
-    b ffi_call_SYSV     ; linux code doesn't need a branch.  Is this correct?
+    b ffi_call_SYSV     ; linux code does not need a branch.  Is this correct?
     ENDP
 
     EXPORT |ffi_call_SYSV|
@@ -115,73 +105,82 @@ return_struct
     ENDP
 
 
-/*
-    int ffi_closure_inner_* (cif, fun, user_data, frame)
-*/
-
-;    EXPORT |ffi_go_closure_SYSV|
-;|ffi_go_closure_SYSV| PROC
-;    stmdb    sp!, {r0-r3}            ; save argument regs
-;    ldr    r0, [ip, #4]            ; load cif
-;    ldr    r1, [ip, #8]            ; load fun
-;    mov    r2, ip                ; load user_data
-;    ;b    0f
-;    b ffi_closure_SYSV_0
-;    ENDP
-
     IMPORT |ffi_closure_inner_SYSV|
+    /*
+    int ffi_closure_inner_SYSV
+    (
+        cif,        ; r0
+        fun,        ; r1
+        user_data,  ; r2
+        frame       ; r3
+    )
+    */
+
+
     EXPORT |ffi_closure_SYSV|
+    ; r3:    ffi_closure
+
 |ffi_closure_SYSV| PROC
     stmdb    sp!, {r0-r3}            ; save argument regs
+    mov     ip, sp
 
-    ldr    r0, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET]    ; load cif
-    ldr    r1, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; load fun
-    ldr    r2, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; load user_data
-ffi_closure_SYSV_0
-    add    ip, sp, #16            ; compute entry sp
-    sub    sp, sp, #64+32            ; allocate frame
-    stmdb    sp!, {ip,lr}
+    ldr    r0, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET]    ; ffi_closure->cif
+    ldr    r1, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; ffi_closure->fun
+    ldr    r2, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; ffi_closure->user_data
 
-    add    r3, sp, #8            ; load frame
-    bl    ffi_closure_inner_SYSV
+    sub     sp, sp, #64+32          ; allocate frame parameter (sizeof(vfp_space) = 64, sizeof(result) = 32)
+    mov     r3, sp                  ; set frame parameter
+    stmdb sp!,{ip,lr}
 
-    ; Load values returned in registers.
-    add    r2, sp, #8+64            ; load result
-    adr    r3, ffi_closure_ret
-    add    pc, r3, r0, lsl #3
+    bl      ffi_closure_inner_SYSV  ; call the Python closure
+
+                                    ; Load values returned in registers.
+    add     r2, sp, #64+8           ; address of closure_frame->result
+    bl      ffi_closure_ret         ; move result to correct register or memory for type
+
+    ldmfd sp!,{ip,lr}
+    mov     sp, ip                  ; restore stack pointer
+    ldmfd   sp!, {r0-r3}            ; return to address passed in lr
+    mov     pc, lr
     ENDP
 
-;    EXPORT |ffi_go_closure_VFP|
-;|ffi_go_closure_VFP| PROC
-;    stmdb    sp!, {r0-r3}            ; save argument regs
-;    ldr    r0, [ip, #4]            ; load cif
-;    ldr    r1, [ip, #8]            ; load fun
-;    mov    r2, ip                ; load user_data
-;;    b    ffi_go_closure_VFP_0
-;    cfi_endproc
-;    ENDP
 
     IMPORT |ffi_closure_inner_VFP|
-    EXPORT |ffi_closure_VFP|
-|ffi_closure_VFP| PROC
-    stmdb    sp!, {r0-r3}            ; save argument regs
+    /*
+    int ffi_closure_inner_VFP
+    (
+        cif,        ; r0
+        fun,        ; r1
+        user_data,  ; r2
+        frame       ; r3
+    )
+    */
 
-    ldr    r0, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET]    ; load cif
-    ldr    r1, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; load fun
-    ldr    r2, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; load user_data
-ffi_go_closure_VFP_0
-    add    ip, sp, #16
+
+    EXPORT |ffi_closure_VFP|
+    ; r3:    closure
+|ffi_closure_VFP| PROC
+    stmdb    sp!, {r0-r2,r4}            ; save argument regs
+
+    ldr    r0, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET]    ; load cif
+    ldr    r1, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; load fun
+    ldr    r2, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; load user_data
+
+    mov    r3, sp
     sub    sp, sp, #64+32            ; allocate frame
     vstm sp, {d0-d7}
-    stmdb    sp!, {ip,lr}
+    stmdb    sp!, {r4,lr}
+    add    r4, sp, #24
+
+    mov    r4, r3  ; save sp in non-volatile register
 
     add    r3, sp, #8            ; load frame
-    bl    ffi_closure_inner_VFP
+    bl     ffi_closure_inner_VFP
 
     ; Load values returned in registers.
     add    r2, sp, #8+64            ; load result
-    adr    r3, ffi_closure_ret
-    add    pc, r3, r0, lsl #3
+    bl     ffi_closure_ret
+    ldmfd   sp!, {r4,pc}
     ENDP
 
 /* Load values returned in registers for both closure entry points.
@@ -191,39 +190,41 @@ ffi_go_closure_VFP_0
     EXPORT |ffi_closure_ret|
 |ffi_closure_ret| PROC
 return_vfp_s_2
-    cmp r2, #ARM_TYPE_VFP_S
+    stmdb sp!, {fp,lr}
+    cmp r0, #ARM_TYPE_VFP_S
     bne return_vfp_f_2
     vldr s0, [r2]
     beq call_epilogue
 return_vfp_f_2
-    cmp r2, #ARM_TYPE_VFP_D
+    cmp r0, #ARM_TYPE_VFP_D
     bne return_vfp_n_2
     vldr d0, [r2]
     beq call_epilogue
 return_vfp_n_2
-    cmp r2, #ARM_TYPE_VFP_N
+    cmp r0, #ARM_TYPE_VFP_N
     bne return_vfp_int64_2
     vldm r2, {d0-d3}
     beq call_epilogue
 return_vfp_int64_2
-    cmp r2, #ARM_TYPE_INT64
+    cmp r0, #ARM_TYPE_INT64
     bne return_vfp_int_2
     ldr    r1, [r2, #4]
     ldr    r0, [r2]
     beq call_epilogue
 return_vfp_int_2
-    cmp r2, #ARM_TYPE_INT
+    cmp r0, #ARM_TYPE_INT
     bne return_vfp_void_2
     ldr    r0, [r2]
     beq call_epilogue
 return_vfp_void_2
-    cmp r2, #ARM_TYPE_VOID
+    cmp r0, #ARM_TYPE_VOID
     bne return_vfp_struct_2
     beq call_epilogue
 return_vfp_struct_2
-    cmp r2, #ARM_TYPE_STRUCT
+    cmp r0, #ARM_TYPE_STRUCT
     beq call_epilogue
 call_epilogue
+    ldmfd sp!, {fp,pc}
     ENDP
 
 
