@@ -13,7 +13,6 @@ dll = ctypes.CDLL(_ctypes_test.__file__)
 class RefcountTestCase(unittest.TestCase):
 
     @support.refcount_test
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_1(self):
         from sys import getrefcount as grc
 
@@ -39,7 +38,6 @@ class RefcountTestCase(unittest.TestCase):
 
 
     @support.refcount_test
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_refcount(self):
         from sys import getrefcount as grc
         def func(*args):
@@ -88,7 +86,6 @@ class RefcountTestCase(unittest.TestCase):
         self.assertEqual(grc(func), 2)
 
 class AnotherLeak(unittest.TestCase):
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callback(self):
         import sys
 

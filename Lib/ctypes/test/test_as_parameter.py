@@ -51,7 +51,6 @@ class BasicWrapTestCase(unittest.TestCase):
         result = f(self.wrap(p))
         self.assertEqual(result.contents.value, 99)
 
-    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_shorts(self):
         f = dll._testfunc_callback_i_if
 
@@ -71,7 +70,6 @@ class BasicWrapTestCase(unittest.TestCase):
 
     ################################################################
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callbacks(self):
         f = dll._testfunc_callback_i_if
         f.restype = c_int
@@ -106,7 +104,6 @@ class BasicWrapTestCase(unittest.TestCase):
         cb = AnotherCallback(callback)
         self.assertRaises(ArgumentError, f, self.wrap(-10), self.wrap(cb))
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callbacks_2(self):
         # Can also use simple datatypes as argument type specifiers
         # for the callback function.
@@ -127,7 +124,6 @@ class BasicWrapTestCase(unittest.TestCase):
         result = f(self.wrap(-10), self.wrap(cb))
         self.assertEqual(result, -18)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_longlong_callbacks(self):
 
         f = dll._testfunc_callback_q_qf

@@ -35,69 +35,69 @@ class Callbacks(unittest.TestCase):
 
     ################
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_byte(self):
         self.check_type(c_byte, 42)
         self.check_type(c_byte, -42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_ubyte(self):
         self.check_type(c_ubyte, 42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_short(self):
         self.check_type(c_short, 42)
         self.check_type(c_short, -42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_ushort(self):
         self.check_type(c_ushort, 42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_int(self):
         self.check_type(c_int, 42)
         self.check_type(c_int, -42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_uint(self):
         self.check_type(c_uint, 42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_long(self):
         self.check_type(c_long, 42)
         self.check_type(c_long, -42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_ulong(self):
         self.check_type(c_ulong, 42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_longlong(self):
         self.check_type(c_longlong, 42)
         self.check_type(c_longlong, -42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_ulonglong(self):
         self.check_type(c_ulonglong, 42)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_float(self):
         # only almost equal: double -> float -> double
         import math
         self.check_type(c_float, math.e)
         self.check_type(c_float, -math.e)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_double(self):
         self.check_type(c_double, 3.14)
         self.check_type(c_double, -3.14)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_longdouble(self):
         self.check_type(c_longdouble, 3.14)
         self.check_type(c_longdouble, -3.14)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_char(self):
         self.check_type(c_char, b"x")
         self.check_type(c_char, b"a")
@@ -110,7 +110,7 @@ class Callbacks(unittest.TestCase):
         self.check_type(c_char_p, "abc")
         self.check_type(c_char_p, "def")
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_pyobject(self):
         o = ()
         from sys import getrefcount as grc
@@ -124,7 +124,6 @@ class Callbacks(unittest.TestCase):
             after = grc(o)
             self.assertEqual((after, o), (before, o))
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_unsupported_restype_1(self):
         # Only "fundamental" result types are supported for callback
         # functions, the type must have a non-NULL stgdict->setfunc.
@@ -134,12 +133,10 @@ class Callbacks(unittest.TestCase):
         # The type is checked when the prototype is called
         self.assertRaises(TypeError, prototype, lambda: None)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_unsupported_restype_2(self):
         prototype = self.functype.__func__(object)
         self.assertRaises(TypeError, prototype, lambda: None)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_issue_7959(self):
         proto = self.functype.__func__(None)
 
@@ -156,7 +153,6 @@ class Callbacks(unittest.TestCase):
                 if isinstance(x, X)]
         self.assertEqual(len(live), 0)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_issue12483(self):
         import gc
         class Nasty:
@@ -197,7 +193,6 @@ class SampleCallbacksTestCase(unittest.TestCase):
 
         self.assertLess(diff, 0.01, "%s not less than 0.01" % diff)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_issue_8959_a(self):
         from ctypes.util import find_library
         libc_path = find_library("c")
@@ -215,7 +210,6 @@ class SampleCallbacksTestCase(unittest.TestCase):
         self.assertEqual(array[:], [1, 5, 7, 33, 99])
 
     @need_symbol('WINFUNCTYPE')
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_issue_8959_b(self):
         from ctypes.wintypes import BOOL, HWND, LPARAM
         global windowCount
@@ -229,7 +223,7 @@ class SampleCallbacksTestCase(unittest.TestCase):
 
         windll.user32.EnumWindows(EnumWindowsCallbackFunc, 0)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callback_register_int(self):
         # Issue #8275: buggy handling of callback args under Win64
         # NOTE: should be run on release builds as well
@@ -266,7 +260,7 @@ class SampleCallbacksTestCase(unittest.TestCase):
         self.assertEqual(result,
                          callback(1.1*1.1, 2.2*2.2, 3.3*3.3, 4.4*4.4, 5.5*5.5))
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+    #@unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callback_large_struct(self):
         class Check: pass
 

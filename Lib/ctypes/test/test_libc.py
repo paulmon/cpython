@@ -18,7 +18,6 @@ class LibTest(unittest.TestCase):
         import math
         self.assertEqual(lib.my_sqrt(2.0), math.sqrt(2.0))
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_qsort(self):
         comparefunc = CFUNCTYPE(c_int, POINTER(c_char), POINTER(c_char))
         lib.my_qsort.argtypes = c_void_p, c_size_t, c_size_t, comparefunc

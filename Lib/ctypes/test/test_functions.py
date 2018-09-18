@@ -220,7 +220,7 @@ class FunctionTestCase(unittest.TestCase):
         self.assertRaises(TypeError, f, X()) #cannot convert parameter
 
     ################################################################
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
+
     def test_shorts(self):
         f = dll._testfunc_callback_i_if
 
@@ -240,8 +240,6 @@ class FunctionTestCase(unittest.TestCase):
 
     ################################################################
 
-
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callbacks(self):
         f = dll._testfunc_callback_i_if
         f.restype = c_int
@@ -270,7 +268,6 @@ class FunctionTestCase(unittest.TestCase):
         cb = AnotherCallback(callback)
         self.assertRaises(ArgumentError, f, -10, cb)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callbacks_2(self):
         # Can also use simple datatypes as argument type specifiers
         # for the callback function.
@@ -292,7 +289,6 @@ class FunctionTestCase(unittest.TestCase):
         self.assertEqual(result, -18)
 
     @need_symbol('c_longlong')
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_longlong_callbacks(self):
 
         f = dll._testfunc_callback_q_qf
