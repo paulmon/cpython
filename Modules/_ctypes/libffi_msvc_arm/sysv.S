@@ -121,16 +121,16 @@ return_struct
     ; r3:    ffi_closure
 
 |ffi_closure_SYSV| PROC
-    stmdb    sp!, {r0-r3}            ; save argument regs
-    mov     ip, sp
+    stmdb   sp!, {r0-r3}            ; save argument regs
+    add     ip, sp, #16             ; save sp from entry
 
-    ldr    r0, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET]    ; ffi_closure->cif
-    ldr    r1, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; ffi_closure->fun
-    ldr    r2, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; ffi_closure->user_data
+    ldr     r0, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET]     ; ffi_closure->cif
+    ldr     r1, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; ffi_closure->fun
+    ldr     r2, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; ffi_closure->user_data
 
     sub     sp, sp, #64+32          ; allocate frame parameter (sizeof(vfp_space) = 64, sizeof(result) = 32)
     mov     r3, sp                  ; set frame parameter
-    stmdb sp!,{ip,lr}
+    stmdb   sp!, {ip,lr}
 
     bl      ffi_closure_inner_SYSV  ; call the Python closure
 
@@ -138,9 +138,8 @@ return_struct
     add     r2, sp, #64+8           ; address of closure_frame->result
     bl      ffi_closure_ret         ; move result to correct register or memory for type
 
-    ldmfd sp!,{ip,lr}
+    ldmfd   sp!, {ip,lr}
     mov     sp, ip                  ; restore stack pointer
-    ldmfd   sp!, {r0-r3}            ; return to address passed in lr
     mov     pc, lr
     ENDP
 

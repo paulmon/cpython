@@ -123,7 +123,7 @@ ffi_closure_free (void *ptr)
 #  define HAVE_MNTENT 1
 # endif
 # if defined(X86_WIN32) || defined(X86_WIN64) || defined(__OS2__)
-/* Windows systems may have Data Execution Protection (DEP) enabled, 
+/* Windows systems may have Data Execution Protection (DEP) enabled,
    which requires the use of VirtualMalloc/VirtualFree to alloc/free
    executable memory. */
 #  define FFI_MMAP_EXEC_WRIT 1
@@ -913,9 +913,12 @@ ffi_closure_alloc (size_t size, void **code)
 
   if (ptr)
     {
-      msegmentptr seg = segment_holding (gm, ptr);
-
-      *code = add_segment_exec_offset (ptr, seg);
+#ifdef _M_ARM
+      // set low bit so that trampoline is called as ARM instruction
+      *code = (char*)(ptr)+1;
+#else
+      *code = ptr;
+#endif
     }
 
   return ptr;

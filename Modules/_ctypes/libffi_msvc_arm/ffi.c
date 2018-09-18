@@ -540,9 +540,6 @@ struct closure_frame
 {
   char vfp_space[8*8] __attribute__((aligned(8)));
   char result[8*4];
-//#ifdef _M_ARM
-//  char r4_lr[24];
-//#endif
   char argp[];
 };
 

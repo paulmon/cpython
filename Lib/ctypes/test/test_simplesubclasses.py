@@ -13,7 +13,6 @@ class Test(unittest.TestCase):
         self.assertEqual(MyInt(3), MyInt(3))
         self.assertNotEqual(MyInt(42), MyInt(43))
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_ignore_retval(self):
         # Test if the return value of a callback is ignored
         # if restype is None
@@ -24,7 +23,6 @@ class Test(unittest.TestCase):
         cb = proto(func)
         self.assertEqual(None, cb())
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_int_callback(self):
         args = []
         def func(arg):

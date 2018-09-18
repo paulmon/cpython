@@ -63,7 +63,6 @@ class PointersTestCase(unittest.TestCase):
         x.value = -99
         self.assertEqual(res.contents.value, -99)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callbacks_with_pointers(self):
         # a function type receiving a pointer
         PROTOTYPE = CFUNCTYPE(c_int, POINTER(c_int))

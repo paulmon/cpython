@@ -34,7 +34,6 @@ class CallbackTracbackTestCase(unittest.TestCase):
     # created, then a full traceback printed.  When SystemExit is
     # raised in a callback function, the interpreter exits.
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def capture_stderr(self, func, *args, **kw):
         # helper - call function 'func', and return the captured stderr
         import io
