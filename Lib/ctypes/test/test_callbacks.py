@@ -157,7 +157,6 @@ class StdcallCallbacks(Callbacks):
 
 class SampleCallbacksTestCase(unittest.TestCase):
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_integrate(self):
         # Derived from some then non-working code, posted by David Foster
         dll = CDLL(_ctypes_test.__file__)
@@ -224,7 +223,6 @@ class SampleCallbacksTestCase(unittest.TestCase):
         result = func(2, 3, 4, 5, 6, CALLBACK(callback))
         self.assertEqual(result, callback(2*2, 3*3, 4*4, 5*5, 6*6))
 
-    @unittest.skipIf(platform.machine() == 'ARM', "callbacks not working")
     def test_callback_register_double(self):
         # Issue #8275: buggy handling of callback args under Win64
         # NOTE: should be run on release builds as well
