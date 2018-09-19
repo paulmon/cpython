@@ -177,9 +177,11 @@ return_struct
     bl      ffi_closure_inner_VFP
 
     ; Load values returned in registers.
-    add     r2, sp, #8+64           ; load result
+    add     r2, sp, #64+8           ; load result
     bl      ffi_closure_ret
-    ldmfd   sp!, {ip,pc}
+    ldmfd   sp!, {ip,lr}
+    mov     sp, ip                  ; restore stack pointer
+    mov     pc, lr
     ENDP
 
 /* Load values returned in registers for both closure entry points.
