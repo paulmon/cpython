@@ -601,8 +601,11 @@ ffi_prep_closure_loc (ffi_closure * closure,
 #define SHORT(x) *(short*)tramp = x, tramp += sizeof(short)
 #define INT(x) *(int*)tramp = x, tramp += sizeof(int)
 
-  /* af f2 04 03   adr r3, ffi_arm_trampoline (copy &closure to r3) */
-  BYTES("\xAF\xF2\x04\x03");
+  /* af f2 04 03   adr ip, ffi_arm_trampoline (copy &closure to ip) */
+  BYTES("\xAF\xF2\x04\x0C");
+
+  /* 2d e9 01 10 stmdb sp!, {ip, r0} */
+  BYTES("\x2D\xE9\x01\x10");
 
   /*df f8 01 f0   ldr pc, closure_func*/
   BYTES("\xDF\xF8\x00\xF0");
