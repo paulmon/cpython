@@ -41,12 +41,11 @@
     ; r3:   vfp_used
 
 |ffi_call_VFP| PROC
-    cmp    r3, #3            ; load only d0 if possible
+    cmp    r3, #3                   ; load only d0 if possible
     vldrle d0, [r0]
     vldmgt r0, {d0-d7}
-    add    r0, r0, #64        ; discard the vfp register args
+    add    r0, r0, #64              ; discard the vfp register args
     /* FALLTHRU */
-    b ffi_call_SYSV     ; linux code does not need a branch.  Is this correct?
     ENDP
 
     EXPORT |ffi_call_SYSV|
@@ -54,11 +53,11 @@
     stm    r1, {fp, lr}
     mov    fp, r1
 
-    mov    sp, r0        ; install the stack pointer
-    mov    lr, r2        ; move the fn pointer out of the way
-    ldr    ip, [fp, #16]    ; install the static chain
-    ldmia    sp!, {r0-r3}    ; move first 4 parameters in registers.
-    blx    lr        ; call fn
+    mov    sp, r0                   ; install the stack pointer
+    mov    lr, r2                   ; move the fn pointer out of the way
+    ldr    ip, [fp, #16]            ; install the static chain
+    ldmia  sp!, {r0-r3}             ; move first 4 parameters in registers.
+    blx    lr                       ; call fn
 
     ; Load r2 with the pointer to storage for the return value
     ; Load r3 with the return type code
@@ -121,12 +120,14 @@ return_struct
     ; r3:    ffi_closure
 
 |ffi_closure_SYSV| PROC
+    ldmfd   sp!, {ip,r0}            ; restore fp (r0 is used for stack alignment)
     stmdb   sp!, {r0-r3}            ; save argument regs
-    add     ip, sp, #16             ; save sp from entry
 
-    ldr     r0, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET]     ; ffi_closure->cif
-    ldr     r1, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; ffi_closure->fun
-    ldr     r2, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; ffi_closure->user_data
+    ldr     r0, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET]    ; ffi_closure->cif
+    ldr     r1, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; ffi_closure->fun
+    ldr     r2, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; ffi_closure->user_data
+
+    add     ip, sp, #16             ; compute entry sp
 
     sub     sp, sp, #64+32          ; allocate frame parameter (sizeof(vfp_space) = 64, sizeof(result) = 32)
     mov     r3, sp                  ; set frame parameter
@@ -159,27 +160,26 @@ return_struct
     EXPORT |ffi_closure_VFP|
     ; r3:    closure
 |ffi_closure_VFP| PROC
-    stmdb    sp!, {r0-r2,r4}            ; save argument regs
+    ldmfd   sp!, {ip,r0}            ; restore fp (r0 is used for stack alignment)
+    stmdb   sp!, {r0-r3}            ; save argument regs
 
-    ldr    r0, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET]    ; load cif
-    ldr    r1, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; load fun
-    ldr    r2, [r3, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; load user_data
+    ldr     r0, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET]    ; load cif
+    ldr     r1, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+4]  ; load fun
+    ldr     r2, [ip, #FFI_TRAMPOLINE_CLOSURE_OFFSET+8]  ; load user_data
 
-    mov    r3, sp
-    sub    sp, sp, #64+32            ; allocate frame
-    vstm sp, {d0-d7}
-    stmdb    sp!, {r4,lr}
-    add    r4, sp, #24
+    add     ip, sp, #16             ; compute entry sp
+    sub     sp, sp, #32             ; save space for closure_frame->result
+    vstmdb  sp!, {d0-d7}            ; push closure_frame->vfp_space
 
-    mov    r4, r3  ; save sp in non-volatile register
+    mov     r3, sp                  ; save closure_frame
+    stmdb   sp!, {ip,lr}
 
-    add    r3, sp, #8            ; load frame
-    bl     ffi_closure_inner_VFP
+    bl      ffi_closure_inner_VFP
 
     ; Load values returned in registers.
-    add    r2, sp, #8+64            ; load result
-    bl     ffi_closure_ret
-    ldmfd   sp!, {r4,pc}
+    add     r2, sp, #8+64           ; load result
+    bl      ffi_closure_ret
+    ldmfd   sp!, {ip,pc}
     ENDP
 
 /* Load values returned in registers for both closure entry points.
@@ -230,6 +230,7 @@ call_epilogue
     EXPORT |ffi_arm_trampoline|
 |ffi_arm_trampoline| PROC
 thisproc    adr    ip, thisproc
+            stmdb  sp!, {ip, r0}
             ldr    pc, =closure
 closure     DCD    0
             ENDP
