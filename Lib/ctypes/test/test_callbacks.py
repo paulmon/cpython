@@ -1,6 +1,5 @@
 import functools
 import unittest
-import platform
 from ctypes import *
 from ctypes.test import need_symbol
 import _ctypes_test

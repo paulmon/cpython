@@ -7,7 +7,7 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{dbdea1f2-ad8b-44ca-b782-fcf65d91559b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="arm">
+    <Filter Include="win-arm32">
       <UniqueIdentifier>{7598612c-2a87-4b76-9bb7-9bbbf099b1f1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -31,22 +31,22 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\ffi.h">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\ffi_cfi.h">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\ffi_common.h">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\fficonfig.h">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\ffitarget.h">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\internal.h">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -78,28 +78,16 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\closures.c">
-      <Filter>arm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\debug.c">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClCompile>
     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\dlmalloc.c">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClCompile>
     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\ffi.c">
-      <Filter>arm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\java_raw_api.c">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClCompile>
     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\prep_cif.c">
-      <Filter>arm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\raw_api.c">
-      <Filter>arm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\types.c">
-      <Filter>arm</Filter>
+      <Filter>win-arm32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -108,7 +96,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ARMASM Include="..\Modules\_ctypes\libffi_msvc_arm\sysv.S" />
+    <ARMASM Include="..\Modules\_ctypes\libffi_msvc_arm\sysv.S">
+      <Filter>win-arm32</Filter>
+    </ARMASM>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\PC\python_nt.rc" />

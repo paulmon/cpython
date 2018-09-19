@@ -31,15 +31,11 @@
 
 #include <stdlib.h>
 
-#ifdef _M_ARM
-extern unsigned int ffi_arm_trampoline[2];
-#endif
-
 /* ffi_prep_args is called by the assembly routine once stack space
    has been allocated for the function's arguments */
 
 extern void Py_FatalError(const char *msg);
-#if !defined(_M_ARM)
+
 /*@-exportheader@*/
 void ffi_prep_args(char *stack, extended_cif *ecif)
 /*@=exportheader@*/
@@ -148,217 +144,6 @@ void ffi_prep_args(char *stack, extended_cif *ecif)
     }
   return;
 }
-#else
-
-#define INVALID_REGISTER -1
-#define NUM_OF_FLOAT_REGISTERS 16
-
-static int get_next_float_register(char* register_state)
-{
-    for (int i = 0; i < NUM_OF_FLOAT_REGISTERS; i++)
-    {
-        if (!register_state[i]) 
-        {
-            register_state[i] = 1;
-            return i;
-        }
-    }
-    return INVALID_REGISTER;
-}
-
-static int get_next_double_register(char* register_state)
-{
-    for (int i = 0; i < NUM_OF_FLOAT_REGISTERS/2; i++)
-    {
-        if (!register_state[2*i] && !register_state[2*i+1])
-        {
-            register_state[2*i] = 1;
-            register_state[2*i+1] = 1;
-            return i;
-        }
-    }
-    return INVALID_REGISTER;
-}
-
-#define REGISTER_CASE(num,type) \
-        case num: \
-            extern void set_ ## type ## _register ## num ( type *); \
-            set_ ## type ## _register ## num (value); \
-            break; 
-
-void set_float_register(int num, float* value)
-{
-    switch(num)
-    {
-        REGISTER_CASE(0, float);
-        REGISTER_CASE(1, float);
-        REGISTER_CASE(2, float);
-        REGISTER_CASE(3, float);
-        REGISTER_CASE(4, float);
-        REGISTER_CASE(5, float);
-        REGISTER_CASE(6, float);
-        REGISTER_CASE(7, float);
-        REGISTER_CASE(8, float);
-        REGISTER_CASE(9, float);
-        REGISTER_CASE(10, float);
-        REGISTER_CASE(11, float);
-        REGISTER_CASE(12, float);
-        REGISTER_CASE(13, float);
-        REGISTER_CASE(14, float);
-        REGISTER_CASE(15, float);
-        default:
-            Py_FatalError("FFI BUG: invalid register number");
-    }
-}
-
-void set_double_register(int num, double* value)
-{
-    switch (num)
-    {
-        REGISTER_CASE(0, double);
-        REGISTER_CASE(1, double);
-        REGISTER_CASE(2, double);
-        REGISTER_CASE(3, double);
-        REGISTER_CASE(4, double);
-        REGISTER_CASE(5, double);
-        REGISTER_CASE(6, double);
-        REGISTER_CASE(7, double);
-    default:
-        Py_FatalError("FFI BUG: invalid register number");
-    }
-}
-
-#undef REGISTER_CASE
-
-extern void set_double_register(int num, double* value);
-
-/*@-exportheader@*/
-void ffi_prep_args(char *stack, extended_cif *ecif)
-/*@=exportheader@*/
-{
-    register unsigned int i;
-    register void **p_argv;
-    register char *argp;
-    register ffi_type **p_arg;
-
-    argp = stack;
-    if (ecif->cif->rtype->type == FFI_TYPE_STRUCT)
-    {
-        *(void **)argp = ecif->rvalue;
-        argp += sizeof(void *);
-    }
-
-    char register_state[NUM_OF_FLOAT_REGISTERS];
-    memset(register_state, 0, sizeof(register_state));
-
-    for (i = ecif->cif->nargs, p_arg = ecif->cif->arg_types, p_argv = ecif->avalue;
-            i != 0;
-            i--, p_arg++, p_argv++)
-    {
-        if ((*p_arg)->type == FFI_TYPE_FLOAT)
-        {
-            // float uses sX register
-            int register_num = get_next_float_register(register_state);
-            if (register_num != INVALID_REGISTER)
-            {
-                set_float_register(register_num, (float *)(*p_argv));
-                continue;
-            }
-            // else - No more registers.  Fall through and pass on stack
-        } 
-        else if ((*p_arg)->type == FFI_TYPE_DOUBLE)
-        {
-            // double uses dX register
-            int register_num = get_next_double_register(register_state);
-            if (register_num != INVALID_REGISTER)
-            {
-                set_double_register(register_num, (double *)(*p_argv));
-                continue;
-            }
-            // else - No more registers.  Fall through and pass on stack
-        }
-
-        size_t z;
-        size_t argalign = sizeof(void*);
-        if ((*p_arg)->alignment > argalign) {
-            argalign = (*p_arg)->alignment;
-        }
-
-        /* Align if necessary */
-        if ((argalign - 1) & (size_t)argp)
-            argp = (char *)ALIGN(argp, argalign);
-
-        z = (*p_arg)->size;
-        if (z < sizeof(intptr_t))
-        {
-            z = sizeof(intptr_t);
-            switch ((*p_arg)->type)
-            {
-            case FFI_TYPE_SINT8:
-                *(intptr_t *)argp = (intptr_t)*(char *)(*p_argv);
-                break;
-
-            case FFI_TYPE_UINT8:
-                *(uintptr_t *)argp = (uintptr_t)*(unsigned char *)(*p_argv);
-                break;
-
-            case FFI_TYPE_SINT16:
-                *(intptr_t *)argp = (intptr_t)*(short *)(*p_argv);
-                break;
-
-            case FFI_TYPE_UINT16:
-                *(uintptr_t *)argp = (uintptr_t)*(unsigned short *)(*p_argv);
-                break;
-
-            case FFI_TYPE_SINT32:
-                *(intptr_t *)argp = (intptr_t)*(SINT32 *)(*p_argv);
-                break;
-
-            case FFI_TYPE_UINT32:
-                *(uintptr_t *)argp = (uintptr_t)*(UINT32 *)(*p_argv);
-                break;
-
-            case FFI_TYPE_FLOAT:
-                *(uintptr_t *)argp = 0;
-                *(float *)argp = *(float *)(*p_argv);
-                break;
-
-                // 64-bit value cases should never be used for x86 and AMD64 builds
-            case FFI_TYPE_SINT64:
-                *(intptr_t *)argp = (intptr_t)*(SINT64 *)(*p_argv);
-                break;
-
-            case FFI_TYPE_UINT64:
-                *(uintptr_t *)argp = (uintptr_t)*(UINT64 *)(*p_argv);
-                break;
-
-            case FFI_TYPE_STRUCT:
-                *(uintptr_t *)argp = (uintptr_t)*(UINT32 *)(*p_argv);
-                break;
-
-            case FFI_TYPE_DOUBLE:
-                *(uintptr_t *)argp = 0;
-                *(double *)argp = *(double *)(*p_argv);
-                break;
-
-            default:
-                FFI_ASSERT(0);
-            }
-        }
-        else
-        {
-            memcpy(argp, *p_argv, z);
-        }
-        argp += z;
-    }
-
-    if (argp >= stack && (unsigned)(argp - stack) > ecif->cif->bytes)
-    {
-        Py_FatalError("FFI BUG: not enough stack space for arguments");
-    }
-    return;
-}
-#endif
 
 /* Perform machine dependent cif processing */
 ffi_status ffi_prep_cif_machdep(ffi_cif *cif)
@@ -402,22 +187,14 @@ ffi_status ffi_prep_cif_machdep(ffi_cif *cif)
 }
 
 #ifdef _WIN32
-#if !defined(_M_ARM)
 extern int
 ffi_call_x86(void (*)(char *, extended_cif *), 
 	     /*@out@*/ extended_cif *, 
 	     unsigned, unsigned, 
 	     /*@out@*/ unsigned *, 
 	     void (*fn)());
-#else
-extern int
-ffi_call_arm(void(*)(char *, extended_cif *),
-    /*@out@*/ extended_cif *,
-    unsigned, unsigned,
-    /*@out@*/ unsigned *,
-    void(*fn)());
 #endif
-#endif
+
 #ifdef _WIN64
 extern int
 ffi_call_AMD64(void (*)(char *, extended_cif *),
@@ -426,7 +203,6 @@ ffi_call_AMD64(void (*)(char *, extended_cif *),
 		 /*@out@*/ unsigned *,
 		 void (*fn)());
 #endif
-
 
 int
 ffi_call(/*@dependent@*/ ffi_cif *cif, 
@@ -456,19 +232,11 @@ ffi_call(/*@dependent@*/ ffi_cif *cif,
   switch (cif->abi) 
     {
 #if !defined(_WIN64)
-#if !defined(_M_ARM)
     case FFI_SYSV:
     case FFI_STDCALL:
       return ffi_call_x86(ffi_prep_args, &ecif, cif->bytes, 
 			  cif->flags, ecif.rvalue, fn);
       break;
-#else
-    // On Arm __stdcall is ignored by the compiler
-    case FFI_STDCALL:
-    case FFI_SYSV:
-      return ffi_call_arm(ffi_prep_args, &ecif, cif->bytes,
-            cif->flags, ecif.rvalue, fn);
-#endif
 #else
     case FFI_SYSV:
       /* If a single argument takes more than 8 bytes,
@@ -534,7 +302,7 @@ ffi_closure_SYSV (ffi_closure *closure, char *argp)
 
   rtype = cif->flags;
 
-#if defined(_WIN32) && !defined(_M_ARM) && !defined(_WIN64)
+#if defined(_WIN32) && !defined(_WIN64)
 #ifdef _MSC_VER
   /* now, do a generic return based on the value of rtype */
   if (rtype == FFI_TYPE_INT)
@@ -660,7 +428,6 @@ ffi_prep_incoming_args_SYSV(char *stack, void **rvalue,
 /* the cif must already be prep'ed */
 extern void ffi_closure_OUTER();
 
-#ifndef _M_ARM
 ffi_status
 ffi_prep_closure_loc (ffi_closure* closure,
 					  ffi_cif* cif,
@@ -746,32 +513,3 @@ ffi_prep_closure_loc (ffi_closure* closure,
   closure->fun  = fun;
   return FFI_OK;
 }
-#else
-/* the cif must already be prep'ed */
-
-ffi_status
-ffi_prep_closure_loc(ffi_closure * closure,
-    ffi_cif * cif,
-    void(*fun) (ffi_cif *, void *, void **, void *),
-    void *user_data, void *codeloc)
-{
-    void(*closure_func) (void) = (void*)ffi_closure_SYSV;
-
-    memset(&closure->tramp[0], 0xDE, sizeof(closure->tramp));
-    char * dest = closure->tramp;
-    char * src = &ffi_arm_trampoline[0];
-    memcpy(dest, src, 8);
-    //__clear_cache(closure->tramp, closure->tramp + 8);  /* clear data map */
-    //__clear_cache(codeloc, (char*)codeloc + 8);         /* clear insn map */
-	/* This is important to allow calling the trampoline safely */
-	FlushInstructionCache(GetCurrentProcess(), 0, 0);
-	*(void(**)(void))(closure->tramp + 8) = closure_func;
-
-    closure->cif = cif;
-    closure->fun = fun;
-    closure->user_data = user_data;
-
-    return FFI_OK;
-}
-#endif
-

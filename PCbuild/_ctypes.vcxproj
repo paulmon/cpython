@@ -78,7 +78,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\Modules\_ctypes\libffi_msvc_arm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Platform)'=='ARM'">..\Modules\_ctypes\libffi_msvc_arm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories Condition="'$(Platform)'!='ARM'">..\Modules\_ctypes\libffi_msvc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalOptions>/EXPORT:DllGetClassObject,PRIVATE /EXPORT:DllCanUnloadNow,PRIVATE %(AdditionalOptions)</AdditionalOptions>
@@ -92,48 +93,36 @@
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc\fficonfig.h" />
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc\ffitarget.h" />
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\ffi.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\fficonfig.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\ffitarget.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\ffi_cfi.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\ffi_common.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Modules\_ctypes\libffi_msvc_arm\internal.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\closures.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\debug.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
+        <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\dlmalloc.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\dlmalloc.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\ffi.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\java_raw_api.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
+     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\ffi.c">
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\prep_cif.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\raw_api.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\Modules\_ctypes\libffi_msvc_arm\types.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Platform)'!='ARM'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Modules\_ctypes\_ctypes.c" />
     <ClCompile Include="..\Modules\_ctypes\callbacks.c" />
