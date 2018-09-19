@@ -1,4 +1,4 @@
-import unittest, sys, platform
+import unittest, sys
 
 from ctypes import *
 import _ctypes_test

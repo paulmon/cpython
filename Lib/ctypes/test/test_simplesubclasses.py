@@ -1,4 +1,4 @@
-import unittest, platform
+import unittest
 from ctypes import *
 
 class MyInt(c_int):
@@ -22,6 +22,7 @@ class Test(unittest.TestCase):
 
         cb = proto(func)
         self.assertEqual(None, cb())
+
 
     def test_int_callback(self):
         args = []

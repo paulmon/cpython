@@ -1,5 +1,5 @@
 from ctypes import *
-import unittest, sys, platform
+import unittest, sys
 
 def callback_func(arg):
     42 / arg

@@ -8,7 +8,6 @@ Later...
 from ctypes import *
 from ctypes.test import need_symbol
 import sys, unittest
-import platform
 
 try:
     WINFUNCTYPE
@@ -220,7 +219,6 @@ class FunctionTestCase(unittest.TestCase):
         self.assertRaises(TypeError, f, X()) #cannot convert parameter
 
     ################################################################
-
     def test_shorts(self):
         f = dll._testfunc_callback_i_if
 
@@ -239,6 +237,7 @@ class FunctionTestCase(unittest.TestCase):
         self.assertEqual(args, expected)
 
     ################################################################
+
 
     def test_callbacks(self):
         f = dll._testfunc_callback_i_if
@@ -267,6 +266,7 @@ class FunctionTestCase(unittest.TestCase):
         # argument types
         cb = AnotherCallback(callback)
         self.assertRaises(ArgumentError, f, -10, cb)
+
 
     def test_callbacks_2(self):
         # Can also use simple datatypes as argument type specifiers

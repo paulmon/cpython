@@ -1,5 +1,4 @@
 import unittest
-import platform
 from ctypes import *
 from ctypes.test import need_symbol
 import _ctypes_test
@@ -83,7 +82,6 @@ class BasicWrapTestCase(unittest.TestCase):
 
         cb = MyCallback(callback)
 
-        print("test_callbacks cb", cb)
         result = f(self.wrap(-10), self.wrap(cb))
         self.assertEqual(result, -18)
 
