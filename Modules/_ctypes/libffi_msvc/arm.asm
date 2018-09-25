@@ -54,12 +54,9 @@ FFI_TYPE_POINTER    EQU 14
     ldr   r2, [sp, #8]
     ldr   r3, [sp, #12]
 
-    ; and adjust stack
-    ; TODO fix 8 byte alignment
     mov   ip, r6
     cmp   ip, #16
     blt   |$L1|
-    ;ble   |$L1|
     movs  ip, #16
 |$L1|
     add   sp, sp, ip

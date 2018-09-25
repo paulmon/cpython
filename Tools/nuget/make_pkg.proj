@@ -4,11 +4,9 @@
         <ProjectGuid>{10487945-15D1-4092-A214-338395C4116B}</ProjectGuid>
         <OutputName>python</OutputName>
         <OutputName Condition="$(Platform) == 'x86'">$(OutputName)x86</OutputName>
-        <OutputName Condition="$(Platform) == 'ARM'">$(OutputName)ARM32</OutputName>
         <OutputName Condition="$(BuildForDaily) == 'true'">$(OutputName)daily</OutputName>
         <OutputSuffix></OutputSuffix>
         <SupportSigning>false</SupportSigning>
-        <WinIoT>false</WinIoT>
         <BuildForRelease Condition="$(BuildForRelease) == ''">true</BuildForRelease>
     </PropertyGroup>
 
@@ -27,7 +25,6 @@
         <CleanCommand>rmdir /q/s "$(IntermediateOutputPath)"</CleanCommand>
         
         <PythonArguments>"$(PythonExe)" "$(MSBuildThisFileDirectory)\..\msi\make_zip.py"</PythonArguments>
-        <PythonArguments Condition="$(Configuration) == 'Debug'">$(PythonArguments) -d</PythonArguments>
         <PythonArguments>$(PythonArguments) -t "$(IntermediateOutputPath)" -b "$(BuildPath.TrimEnd(`\`))"</PythonArguments>
         
         <PipArguments>"$(IntermediateOutputPath)\python.exe" -B -c "import sys; sys.path.append(r'$(PySourcePath)\Lib'); import ensurepip; ensurepip._main()"</PipArguments>
@@ -52,16 +49,15 @@
     <Target Name="_Build">
         <Exec Command="$(CleanCommand)" />
         <Exec Command="setlocal%0D%0A$(Environment)%0D%0A$(PythonArguments)" />
-        <Exec Command="$(PipArguments)" Condition="$(WinIoT) == 'false'" />
-        <Exec Command="$(PackageArguments)" Condition="$(PackageArguments) != '' and $(WinIoT) ==  'false'" />
+        <Exec Command="$(PipArguments)" />
+        <Exec Command="$(PackageArguments)" Condition="$(PackageArguments) != ''" />
 
         <PropertyGroup>
             <_PropsContents>$([System.IO.File]::ReadAllText('python.props'))</_PropsContents>
             <_PropsContents>$(_PropsContents.Replace('$$PYTHON_TAG$$', '$(MajorVersionNumber).$(MinorVersionNumber)'))</_PropsContents>
             <_PropsContents>$(_PropsContents.Replace('$$PYTHON_VERSION$$', '$(NuspecVersion)'))</_PropsContents>
             <_PropsContents Condition="$(Platform) == 'x86'">$(_PropsContents.Replace('$$PYTHON_PLATFORM$$', 'Win32'))</_PropsContents>
-            <_PropsContents Condition="$(Platform) == 'ARM'">$(_PropsContents.Replace('$$PYTHON_PLATFORM$$', 'arm32'))</_PropsContents>
-            <_PropsContents Condition="'$(Platform)' != 'x86' and '$Platform' != 'ARM'">$(_PropsContents.Replace('$$PYTHON_PLATFORM$$', '$(Platform)'))</_PropsContents>
+            <_PropsContents Condition="$(Platform) != 'x86'">$(_PropsContents.Replace('$$PYTHON_PLATFORM$$', '$(Platform)'))</_PropsContents>
             <_PropsContents>$(_PropsContents.Replace('$$PYTHON_TARGET$$', '_GetPythonRuntimeFilesDependsOn$(MajorVersionNumber)$(MinorVersionNumber)_$(Platform)'))</_PropsContents>
             <_ExistingContents Condition="Exists('$(IntermediateOutputPath)\python.props')">$([System.IO.File]::ReadAllText('$(IntermediateOutputPath)\python.props'))</_ExistingContents>
         </PropertyGroup>
@@ -71,7 +67,6 @@
 
         <Exec Command="$(NugetPackCommand) $(NugetArguments)" />
         <Exec Command="$(NugetPackSymbolsCommand) $(NugetArguments)" Condition="$(NugetPackSymbolsCommand) != ''" />
-        <Message Text="IntermediateOutputPath = $(IntermediateOutputPath)"/>
     </Target>
 
     <Target Name="AfterBuild" />
