@@ -49,13 +49,15 @@
     <!-- pyshellext.dll -->
     <Projects Include="pyshellext.vcxproj" />
     <!-- Extension modules -->
-    <ExtensionModules Include="_asyncio;_contextvars;_ctypes;_decimal;_distutils_findvs;_elementtree;_msi;_multiprocessing;_overlapped;pyexpat;_queue;select;unicodedata;winsound" />
+    <ExtensionModules Include="_asyncio;_contextvars;_ctypes;_elementtree;_msi;_multiprocessing;_overlapped;pyexpat;_queue;select;unicodedata;winsound" />
+    <ExtensionModules Condition="$(Platform) != 'ARM'" Include="_decimal" />
     <!-- Extension modules that require external sources -->
     <ExternalModules Include="_bz2;_lzma;_sqlite3" />
     <!-- _ssl will build _socket as well, which may cause conflicts in parallel builds -->
     <ExtensionModules Include="_socket" Condition="!$(IncludeSSL) or !$(IncludeExternals)" />
     <ExternalModules Include="_ssl;_hashlib" Condition="$(IncludeSSL)" />
     <ExternalModules Include="_tkinter" Condition="$(IncludeTkinter)" />
+    <ExtensionModules Include="_distutils_findvs" Condition="$(IncludeDistUtils_FindVs)" />
     <ExtensionModules Include="@(ExternalModules->'%(Identity)')" Condition="$(IncludeExternals)" />
     <Projects Include="@(ExtensionModules->'%(Identity).vcxproj')" Condition="$(IncludeExtensions)" />
     <!-- Test modules -->
@@ -67,7 +69,7 @@
     </Projects>
     
     <!-- _freeze_importlib -->
-    <Projects2 Include="_freeze_importlib.vcxproj" />
+    <Projects2 Condition="$(Platform) != 'ARM'" Include="_freeze_importlib.vcxproj" />
     <!-- python[w].exe -->
     <Projects2 Include="python.vcxproj;pythonw.vcxproj" />
   </ItemGroup>
