@@ -11,7 +11,7 @@ import _ctypes_test
 @unittest.skipUnless(sizeof(c_void_p) == sizeof(c_int),
                      "sizeof c_void_p and c_int differ")
 class WindowsTestCase(unittest.TestCase):
-    @unittest.skipIf(platform.machine() == 'ARM', "API not present on Windows 10 IoT Core")
+    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP', "API not present on Windows 10 IoT Core")
     def test_callconv_1(self):
         # Testing stdcall function
 
@@ -27,7 +27,7 @@ class WindowsTestCase(unittest.TestCase):
         # (8 bytes in excess)
         self.assertRaises(ValueError, IsWindow, 0, 0, 0)
 
-    @unittest.skipIf(platform.machine() == 'ARM', "API not present on Windows 10 IoT Core")
+    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP', "API not present on Windows 10 IoT Core")
     def test_callconv_2(self):
         # Calling stdcall function as cdecl
 

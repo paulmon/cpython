@@ -13,7 +13,9 @@
 
 #if defined(_MSC_VER)
 #include <intrin.h>
-//#include <immintrin.h>
+#ifndef _M_ARM
+#include <immintrin.h>
+#endif
 #endif
 
 /* This is modeled after the atomics interface from C1x, according to
