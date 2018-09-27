@@ -547,6 +547,10 @@ PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
     return tstate->interp->eval_frame(f, throwflag);
 }
 
+#ifdef _M_ARM
+#pragma optimize ("", off)
+#endif // _M_ARM
+
 PyObject* _Py_HOT_FUNCTION
 _PyEval_EvalFrameDefault(PyFrameObject *f, int throwflag)
 {
@@ -3499,6 +3503,10 @@ exit_eval_frame:
 
     return _Py_CheckFunctionResult(NULL, retval, "PyEval_EvalFrameEx");
 }
+
+#ifdef _M_ARM
+#pragma optimize ("", on)
+#endif // _M_ARM
 
 static void
 format_missing(const char *kind, PyCodeObject *co, PyObject *names)
