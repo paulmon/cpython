@@ -145,7 +145,7 @@ mpd_bsf(mpd_size_t a)
 }
 /* END ASM */
 
-#elif defined(MASM)
+#elif defined(MASM) || defined (_M_ARM)
 #include <intrin.h>
 /*
  * Bit scan reverse. Assumptions: a != 0.

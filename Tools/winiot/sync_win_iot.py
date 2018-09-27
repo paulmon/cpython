@@ -50,9 +50,18 @@ EXCLUDE_FILE_FROM_LIBS = {
 
 EXCLUDED_FILES = {
     'pyshellext',
+    'pyshellext_d'
+}
+
+INCLUDED_FILES = {
+    'libcrypto-1_1',
+    'libssl-1_1',
 }
 
 def is_debug(p):
+    if p.stem.lower() in INCLUDED_FILES:
+        return True
+
     if p.stem.lower() in EXCLUDED_FILES:
         return False
 
@@ -78,6 +87,9 @@ def is_not_python(p):
         includeFile = is_debug(p)
     else:
         includeFile = is_not_debug(p)
+
+    # if p.suffix.lower() == '.dll':
+    #     print ('is_not_python: [{}] {}'.format(includeFile, p))
 
     return includeFile and not PYTHON_DLL_RE.search(p.name) and not PYTHON_D_DLL_RE.search(p.name)
 
@@ -165,10 +177,15 @@ def copy_to_layout(target, rel_sources):
                 pass
 
             if dest.is_file():
-                dest.chmod(stat.S_IWRITE)
+                timeNotEqual = True if s.stat().st_mtime !=dest.stat().st_mtime else False
+                sizeNotEqual = True if s.stat().st_size != dest.stat().st_size else False
 
-            shutil.copy2(str(s), str(dest))
-            count += 1
+            if not dest.is_file() or timeNotEqual or sizeNotEqual:
+                print(dest)
+                # print ('timeNotEqual = {}'.format(timeNotEqual))
+                # print ('sizeNotEqual = {}'.format(sizeNotEqual))
+                shutil.copy2(str(s), str(dest))
+                count += 1
 
     return count
 
@@ -188,6 +205,7 @@ def main():
     global includeTest
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--clean', help='Clean output directory', action='store_true', default=False)
     parser.add_argument('-d', '--debug', help='Include debug files', action='store_true', default=False)
     parser.add_argument('-p', '--platform', metavar='dir', help='One of win32, amd64, or arm32', type=Path, default=None)
     parser.add_argument('-t', '--test', help='Include test files', action='store_true', default=False)
@@ -215,11 +233,13 @@ def main():
     print ('source = {}'.format(source))
     print ('output = {}'.format(output)) 
 
-    print ('clean output directory')
-    shutil.rmtree(output)
+    if ns.clean:
+        print ('clean output directory')
+        shutil.rmtree(output)
 
-    print ('create output directory')
-    os.mkdir(output)
+    if not output.is_dir():
+        print ('create output directory')
+        os.mkdir(output)
 
     assert isinstance(repo, Path)
     assert isinstance(source, Path)
