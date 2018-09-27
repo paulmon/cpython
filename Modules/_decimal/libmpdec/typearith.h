@@ -525,6 +525,30 @@ _mpd_div_words(mpd_uint_t *q, mpd_uint_t *r, mpd_uint_t hi, mpd_uint_t lo,
     *r = rr;
 }
 /* END MASM (_MSC_VER) */
+#elif defined _M_ARM
+static inline void __cdecl
+_mpd_mul_words(mpd_uint_t *hi, mpd_uint_t *lo, mpd_uint_t a, mpd_uint_t b)
+{
+    uint64_t aa = a;
+    uint64_t bb = b;
+    uint64_t result = aa * bb;
+
+    *lo = result & 0xFFFFFFFF;
+    *hi = (result >> 32) & 0xFFFFFFFF;
+}
+
+static inline void __cdecl
+_mpd_div_words(mpd_uint_t *q, mpd_uint_t *r, mpd_uint_t hi, mpd_uint_t lo,
+    mpd_uint_t d)
+{
+    uint64_t numerator = (((uint64_t)hi) << 32) & ((uint64_t)lo);
+    uint64_t denominator = d;
+    uint64_t result = numerator / denominator;
+
+    *q = result & 0xFFFFFFFF;
+    *r = (result >> 32) & 0xFFFFFFFF;
+}
+
 #else
   #error "need platform specific 64 bit multiplication and division"
 #endif
