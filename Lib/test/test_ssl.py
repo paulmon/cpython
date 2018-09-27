@@ -1319,7 +1319,7 @@ class ContextTests(unittest.TestCase):
         with self.assertRaisesRegex(ssl.SSLError, "not enough data"):
             ctx.load_verify_locations(cadata=b"broken")
 
-
+    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP' and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
     def test_load_dh_params(self):
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         ctx.load_dh_params(DHFILE)
@@ -1621,6 +1621,7 @@ class SSLErrorTests(unittest.TestCase):
         self.assertEqual(str(e), "foo")
         self.assertEqual(e.errno, 1)
 
+    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP' and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
     def test_lib_reason(self):
         # Test the library and reason attributes
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -3725,6 +3726,7 @@ class ThreadedTests(unittest.TestCase):
                                    sni_name=hostname)
         self.assertIs(stats['compression'], None)
 
+    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP' and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
     def test_dh_params(self):
         # Check we can get a connection with ephemeral Diffie-Hellman
         client_context, server_context, hostname = testing_context()

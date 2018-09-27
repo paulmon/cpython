@@ -105,7 +105,7 @@
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <Target Name="_RebuildImportLib">
-    <Exec Command="&quot;$(TargetPath)&quot; &quot;%(None.FullPath)&quot; &quot;%(None.IntFile)&quot;" />
+    <Exec Command="&quot;$(TargetPath)&quot; &quot;%(None.FullPath)&quot; &quot;%(None.IntFile)&quot;" Condition="'$(Platform)'!='ARM'"/>
     <PropertyGroup>
       <_OldContent Condition="Exists($(OutTargetPath))">
       </_OldContent>
