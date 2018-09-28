@@ -88,9 +88,6 @@ def is_not_python(p):
     else:
         includeFile = is_not_debug(p)
 
-    # if p.suffix.lower() == '.dll':
-    #     print ('is_not_python: [{}] {}'.format(includeFile, p))
-
     return includeFile and not PYTHON_DLL_RE.search(p.name) and not PYTHON_D_DLL_RE.search(p.name)
 
 def include_in_lib(p):
@@ -182,8 +179,6 @@ def copy_to_layout(target, rel_sources):
 
             if not dest.is_file() or timeNotEqual or sizeNotEqual:
                 print(dest)
-                # print ('timeNotEqual = {}'.format(timeNotEqual))
-                # print ('sizeNotEqual = {}'.format(sizeNotEqual))
                 shutil.copy2(str(s), str(dest))
                 count += 1
 
