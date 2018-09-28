@@ -543,10 +543,11 @@ _mpd_div_words(mpd_uint_t *q, mpd_uint_t *r, mpd_uint_t hi, mpd_uint_t lo,
 {
     uint64_t numerator = (((uint64_t)hi) << 32) & ((uint64_t)lo);
     uint64_t denominator = d;
-    uint64_t result = numerator / denominator;
+    uint64_t quotient = numerator / denominator;
+    uint64_t remainder = numerator % denominator;
 
-    *q = result & 0xFFFFFFFF;
-    *r = (result >> 32) & 0xFFFFFFFF;
+    *q = (mpd_uint_t)quotient;
+    *r = (mpd_uint_t)remainder;
 }
 
 #else
