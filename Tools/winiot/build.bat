@@ -12,12 +12,14 @@ set REBUILD=
 set DEBUG=
 set TEST=
 set _SUFFIX=
+set CLEAN=
 
 :CheckOpts
 if "%~1" EQU "-h" goto Help
 if "%~1" EQU "-x86" (set BUILDX86=1) && shift && goto CheckOpts
 if "%~1" EQU "-x64" (set BUILDX64=1) && shift && goto CheckOpts
 if "%~1" EQU "-arm" (set BUILDARM=1) && shift && goto CheckOpts
+if "%~1" EQU "-c" (set CLEAN=-c) && shift && goto CheckOpts
 if "%~1" EQU "-t" (set TEST=-t) && shift && goto CheckOpts
 if "%~1" EQU "-r" (set REBUILD=-r) && shift && goto CheckOpts
 if "%~1" EQU "-d" (set DEBUG=-d && set _SUFFIX=_d) && shift && goto CheckOpts
@@ -38,7 +40,7 @@ if defined BUILDX86 (
     ) else if not exist "%Py_OutDir%win32\python%_SUFFIX%.exe" call "%PCBUILD%build.bat" -e %DEBUG% 
     if errorlevel 1 goto :eof
 
-    %PYTHON_EXE% %D%sync_win_iot.py %DEBUG% %TEST% -p win32
+    %PYTHON_EXE% %D%sync_win_iot.py %DEBUG% %TEST% %CLEAN% -p win32
 )
 
 if defined BUILDX64 (
@@ -46,7 +48,7 @@ if defined BUILDX64 (
     ) else if not exist "%Py_OutDir%amd64\python%_SUFFIX%.exe" call "%PCBUILD%build.bat" -p x64 -e %DEBUG% 
     if errorlevel 1 goto :eof
 
-    %PYTHON_EXE% %D%sync_win_iot.py %DEBUG% %TEST% -p amd64
+    %PYTHON_EXE% %D%sync_win_iot.py %DEBUG% %TEST% %CLEAN% -p amd64
 )
 
 if defined BUILDARM (
@@ -54,7 +56,7 @@ if defined BUILDARM (
     ) else if not exist "%Py_OutDir%arm32\python%_SUFFIX%.exe" call "%PCBUILD%build.bat" -p ARM -E %DEBUG% --no-tkinter --no-vs
     if errorlevel 1 goto :eof
 
-    %PYTHON_EXE% %D%sync_win_iot.py %DEBUG% %TEST% -p arm32
+    %PYTHON_EXE% %D%sync_win_iot.py %DEBUG% %TEST% %CLEAN% -p arm32
 )
 
 exit /B 0
@@ -66,6 +68,7 @@ echo    -x86                Build and sync x86 files
 echo    -x64                Build and sync x64 files
 echo    -arm                Build and sync arm files (will build X64 to execute tools)
 echo    -t                  Include test files
+echo    -c                  Clean output directory
 echo    -d                  Build Debug configuration
 echo    -r                  Rebuild rather than incremental build
 echo    -h                  Show usage
