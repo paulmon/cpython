@@ -547,10 +547,6 @@ PyEval_EvalFrameEx(PyFrameObject *f, int throwflag)
     return tstate->interp->eval_frame(f, throwflag);
 }
 
-#ifdef _M_ARM
-#pragma optimize ("", off)
-#endif // _M_ARM
-
 PyObject* _Py_HOT_FUNCTION
 _PyEval_EvalFrameDefault(PyFrameObject *f, int throwflag)
 {
@@ -1629,6 +1625,14 @@ _PyEval_EvalFrameDefault(PyFrameObject *f, int throwflag)
                 exc = POP(); /* exc */
                 /* fall through */
             case 0:
+#ifdef _M_ARM
+                // work around optimizer problem on windows arm32
+                if (oparg == 2)
+                {
+                    exc = stack_pointer[0];
+                    cause = stack_pointer[1];
+                }
+#endif
                 if (do_raise(exc, cause)) {
                     why = WHY_EXCEPTION;
                     goto fast_block_end;
@@ -3503,10 +3507,6 @@ exit_eval_frame:
 
     return _Py_CheckFunctionResult(NULL, retval, "PyEval_EvalFrameEx");
 }
-
-#ifdef _M_ARM
-#pragma optimize ("", on)
-#endif // _M_ARM
 
 static void
 format_missing(const char *kind, PyCodeObject *co, PyObject *names)
