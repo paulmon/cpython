@@ -1,11 +1,15 @@
 """Tests for distutils.command.bdist_msi."""
+import platform
 import sys
 import unittest
 from test.support import run_unittest
 from distutils.tests import support
 
 
-@unittest.skipUnless(sys.platform == 'win32', 'these tests require Windows')
+SKIP_MESSAGE = (None if sys.platform == "win32" and platform.win32_editionId() != 'IoTUAP' else
+                "These tests require Windows x86 or x64.  ARM is not supported")
+
+@unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
 class BDistMSITestCase(support.TempdirManager,
                        support.LoggingSilencer,
                        unittest.TestCase):

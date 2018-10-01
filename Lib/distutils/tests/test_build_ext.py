@@ -1,5 +1,6 @@
 import sys
 import os
+import platform
 from io import StringIO
 import textwrap
 
@@ -21,6 +22,10 @@ from test import support
 ALREADY_TESTED = False
 
 
+SKIP_MESSAGE = (None if platform.win32_editionId() != 'IoTUAP' else
+                "These tests don't work on windows arm32")
+
+@unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
 class BuildExtTestCase(TempdirManager,
                        LoggingSilencer,
                        unittest.TestCase):
