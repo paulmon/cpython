@@ -1,5 +1,6 @@
 """Tests for distutils.command.bdist."""
 import os
+import platform
 import unittest
 from test.support import run_unittest
 
@@ -7,6 +8,10 @@ from distutils.command.bdist import bdist
 from distutils.tests import support
 
 
+SKIP_MESSAGE = (None if platform.win32_editionId() != 'IoTUAP' else
+                "These tests don't work on windows arm32")
+
+@unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
 class BuildTestCase(support.TempdirManager,
                     unittest.TestCase):
 

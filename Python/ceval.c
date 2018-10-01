@@ -1625,7 +1625,7 @@ _PyEval_EvalFrameDefault(PyFrameObject *f, int throwflag)
                 exc = POP(); /* exc */
                 /* fall through */
             case 0:
-#ifdef _M_ARM
+#if defined(_M_ARM) && !defined(DEBUG)
                 // work around optimizer problem on windows arm32
                 if (oparg == 2)
                 {
