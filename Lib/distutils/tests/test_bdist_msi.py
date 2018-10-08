@@ -6,7 +6,7 @@ from test.support import run_unittest
 from distutils.tests import support
 
 
-SKIP_MESSAGE = (None if sys.platform == "win32" and platform.win32_editionId() != 'IoTUAP' else
+SKIP_MESSAGE = (None if sys.platform == "win32" and platform.win32_is_iot() else
                 "These tests require Windows x86 or x64.  ARM is not supported")
 
 @unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
