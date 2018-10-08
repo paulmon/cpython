@@ -169,7 +169,7 @@ class SysconfigTestCase(support.EnvironGuard, unittest.TestCase):
         self.assertIsNotNone(vars['SO'])
         self.assertEqual(vars['SO'], vars['EXT_SUFFIX'])
 
-    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP', "API not present on Windows 10 IoT Core")
+    @unittest.skipIf(platform.win32_is_iot(), "API not present on Windows 10 IoT Core")
     def test_customize_compiler_before_get_config_vars(self):
         # Issue #21923: test that a Distribution compiler
         # instance can be called without an explicit call to

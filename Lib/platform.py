@@ -499,6 +499,11 @@ _WIN32_SERVER_RELEASES = {
     (6, None): "post2012ServerR2",
 }
 
+def win32_is_iot(isIot=False):
+    if win32_editionId() == 'IoTUAP' or win32_editionId() == 'NanoServer':
+        return True
+    return False
+
 def win32_editionId(editionId=''):
     try:
         from winreg import OpenKeyEx, QueryValueEx, CloseKey, HKEY_LOCAL_MACHINE
