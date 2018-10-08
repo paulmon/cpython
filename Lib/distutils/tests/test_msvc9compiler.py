@@ -1,4 +1,5 @@
 """Tests for distutils.msvc9compiler."""
+import platform
 import sys
 import unittest
 import os
@@ -90,7 +91,7 @@ _CLEANED_MANIFEST = """\
   </dependency>
 </assembly>"""
 
-if sys.platform=="win32":
+if sys.platform=="win32" and platform.win32_editionId() != 'IoTUAP':
     from distutils.msvccompiler import get_build_version
     if get_build_version()>=8.0:
         SKIP_MESSAGE = None

@@ -40,7 +40,7 @@ EXCLUDE_FROM_LIBRARY = {
 }
 
 EXCLUDE_FILE_FROM_LIBRARY = {
-    'bdist_wininst.py',
+    #'bdist_wininst.py',
 }
 
 EXCLUDE_FILE_FROM_LIBS = {
@@ -107,6 +107,13 @@ def include_in_lib(p):
     suffix = p.suffix.lower()
     return suffix not in {'.pyc', '.pyo', '.exe'}
 
+def include_in_libs(p):
+    # if is_debug(p):
+    #     print ('include_in_libs: {} is debug'.format(p))
+    #     return False
+
+    return p.stem.lower() not in EXCLUDE_FILE_FROM_LIBS
+
 def include_in_tools(p):
     if p.is_dir() and p.name.lower() in {'scripts', 'i18n', 'pynche', 'demo', 'parser'}:
         return True
@@ -122,7 +129,10 @@ FULL_LAYOUT = [
     ('/', '$source', '{}.dll'.format(BASE_NAME), is_not_debug),
     ('DLLs/', '$source', '*.pyd', is_not_debug),
     ('DLLs/', '$source', '*.dll', is_not_python),
+    ('include/', 'include', '*.h', None),
+    ('include/', 'PC', 'pyconfig.h', None),
     ('Lib/', 'Lib', '**/*', include_in_lib),
+    ('libs/', '$source', '*.lib', include_in_libs),
     ('Tools/', 'Tools', '**/*', include_in_tools),
 ]
 
@@ -131,9 +141,12 @@ FULL_LAYOUT_DEBUG = [
     ('/', '$source', 'pythonw_d.exe', is_debug),
     ('/', '$source', 'python{}_d.dll'.format(sys.version_info.major), is_debug),
     ('/', '$source', '{}_d.dll'.format(BASE_NAME), is_debug),
+    ('include/', 'include', '*.h', None),
+    ('include/', 'PC', 'pyconfig.h', None),
     ('DLLs/', '$source', '*.pyd', is_debug),
     ('DLLs/', '$source', '*.dll', is_not_python),
     ('Lib/', 'Lib', '**/*', include_in_lib),
+    ('libs/', '$source', '*.lib', include_in_libs),
     ('Tools/', 'Tools', '**/*', include_in_tools),
 ]
 
