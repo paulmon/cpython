@@ -534,7 +534,7 @@ class Telnet:
 
     def interact(self):
         """Interaction function, emulates a very dumb telnet client."""
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             self.mt_interact()
             return
         with _TelnetSelector() as selector:

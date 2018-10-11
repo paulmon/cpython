@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from test import support
 
-if sys.platform != 'win32':
+if not sys.platform.startswith('win'):
     raise unittest.SkipTest("test only relevant on win32")
 
 from _testconsole import write_input

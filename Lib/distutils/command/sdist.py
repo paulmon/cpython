@@ -364,7 +364,7 @@ class sdist(Command):
         self.filelist.exclude_pattern(None, prefix=build.build_base)
         self.filelist.exclude_pattern(None, prefix=base_dir)
 
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             seps = r'/|\\'
         else:
             seps = '/'

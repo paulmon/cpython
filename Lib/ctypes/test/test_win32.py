@@ -56,7 +56,7 @@ class FunctionCallTestCase(unittest.TestCase):
         windll.user32.GetDesktopWindow()
 
 
-@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
+@unittest.skipUnless(sys.platform.startswith("win"), 'Windows-specific test')
 class ReturnStructSizesTestCase(unittest.TestCase):
     def test_sizes(self):
         dll = CDLL(_ctypes_test.__file__)
@@ -74,7 +74,7 @@ class ReturnStructSizesTestCase(unittest.TestCase):
 
 
 
-@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
+@unittest.skipUnless(sys.platform.startswith("win"), 'Windows-specific test')
 class TestWintypes(unittest.TestCase):
     def test_HWND(self):
         from ctypes import wintypes
@@ -98,7 +98,7 @@ class TestWintypes(unittest.TestCase):
         self.assertEqual(ex.text, "text")
         self.assertEqual(ex.details, ("details",))
 
-@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
+@unittest.skipUnless(sys.platform.startswith("win"), 'Windows-specific test')
 class TestWinError(unittest.TestCase):
     def test_winerror(self):
         # see Issue 16169

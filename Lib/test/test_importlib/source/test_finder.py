@@ -153,7 +153,7 @@ class FinderTests(abc.FinderTests):
         found = self._find(finder, 'mod', loader_only=True)
         self.assertIsNone(found)
 
-    @unittest.skipUnless(sys.platform != 'win32',
+    @unittest.skipUnless(not sys.platform.startswith('win'),
             'os.chmod() does not support the needed arguments under Windows')
     def test_no_read_directory(self):
         # Issue #16730

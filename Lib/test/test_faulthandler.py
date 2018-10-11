@@ -170,7 +170,7 @@ class FaultHandlerTests(unittest.TestCase):
             3,
             'Aborted')
 
-    @unittest.skipIf(sys.platform == 'win32',
+    @unittest.skipIf(sys.platform.startswith('win'),
                      "SIGFPE cannot be caught on Windows")
     def test_sigfpe(self):
         self.check_fatal_error("""
@@ -265,7 +265,7 @@ class FaultHandlerTests(unittest.TestCase):
                 'Segmentation fault',
                 filename=filename)
 
-    @unittest.skipIf(sys.platform == "win32",
+    @unittest.skipIf(sys.platform.startswith("win"),
                      "subprocess doesn't support pass_fds on Windows")
     @skip_segfault_on_android
     def test_enable_fd(self):
@@ -420,7 +420,7 @@ class FaultHandlerTests(unittest.TestCase):
         with temporary_filename() as filename:
             self.check_dump_traceback(filename=filename)
 
-    @unittest.skipIf(sys.platform == "win32",
+    @unittest.skipIf(sys.platform.startswith("win"),
                      "subprocess doesn't support pass_fds on Windows")
     def test_dump_traceback_fd(self):
         with tempfile.TemporaryFile('wb+') as fp:
@@ -593,7 +593,7 @@ class FaultHandlerTests(unittest.TestCase):
         with temporary_filename() as filename:
             self.check_dump_traceback_later(filename=filename)
 
-    @unittest.skipIf(sys.platform == "win32",
+    @unittest.skipIf(sys.platform.startswith("win"),
                      "subprocess doesn't support pass_fds on Windows")
     def test_dump_traceback_later_fd(self):
         with tempfile.TemporaryFile('wb+') as fp:
@@ -695,7 +695,7 @@ class FaultHandlerTests(unittest.TestCase):
         with temporary_filename() as filename:
             self.check_register(filename=filename)
 
-    @unittest.skipIf(sys.platform == "win32",
+    @unittest.skipIf(sys.platform.startswith("win"),
                      "subprocess doesn't support pass_fds on Windows")
     def test_register_fd(self):
         with tempfile.TemporaryFile('wb+') as fp:

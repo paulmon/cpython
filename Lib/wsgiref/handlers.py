@@ -49,7 +49,7 @@ def read_environ():
 
             # On win32, the os.environ is natively Unicode. Different servers
             # decode the request bytes using different encodings.
-            if sys.platform == 'win32':
+            if sys.platform.startswith('win'):
                 software = os.environ.get('SERVER_SOFTWARE', '').lower()
 
                 # On IIS, the HTTP request will be decoded as UTF-8 as long

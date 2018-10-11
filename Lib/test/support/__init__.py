@@ -818,7 +818,7 @@ is_jython = sys.platform.startswith('java')
 
 is_android = hasattr(sys, 'getandroidapilevel')
 
-if sys.platform != 'win32':
+if not sys.platform.startswith('win'):
     unix_shell = '/system/bin/sh' if is_android else '/bin/sh'
 else:
     unix_shell = None
@@ -2040,7 +2040,7 @@ def _check_docstrings():
     """Just used to check if docstrings are enabled"""
 
 MISSING_C_DOCSTRINGS = (check_impl_detail() and
-                        sys.platform != 'win32' and
+                        not sys.platform.startswith('win') and
                         not sysconfig.get_config_var('WITH_DOC_STRINGS'))
 
 HAVE_DOCSTRINGS = (_check_docstrings.__doc__ is not None and
@@ -2840,7 +2840,7 @@ def fd_count():
             pass
 
     old_modes = None
-    if sys.platform == 'win32':
+    if sys.platform.startswith('win'):
         # bpo-25306, bpo-31009: Call CrtSetReportMode() to not kill the process
         # on invalid file descriptor if Python is compiled in debug mode
         try:

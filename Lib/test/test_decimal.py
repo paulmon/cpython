@@ -4862,7 +4862,7 @@ class CWhitebox(unittest.TestCase):
         for attr in ('prec', 'Emin', 'Emax', 'capitals', 'clamp'):
             self.assertRaises(OverflowError, setattr, c, attr, int_max+1)
             self.assertRaises(OverflowError, setattr, c, attr, -int_max-2)
-            if sys.platform != 'win32':
+            if not sys.platform.startswith('win'):
                 self.assertRaises(ValueError, setattr, c, attr, int_max)
                 self.assertRaises(ValueError, setattr, c, attr, -int_max-1)
 
@@ -4937,7 +4937,7 @@ class CWhitebox(unittest.TestCase):
         # OverflowError, general ValueError
         self.assertRaises(OverflowError, setattr, c, '_allcr', int_max+1)
         self.assertRaises(OverflowError, setattr, c, '_allcr', -int_max-2)
-        if sys.platform != 'win32':
+        if not sys.platform.startswith('win'):
             self.assertRaises(ValueError, setattr, c, '_allcr', int_max)
             self.assertRaises(ValueError, setattr, c, '_allcr', -int_max-1)
 
@@ -4945,7 +4945,7 @@ class CWhitebox(unittest.TestCase):
         for attr in ('_flags', '_traps'):
             self.assertRaises(OverflowError, setattr, c, attr, int_max+1)
             self.assertRaises(OverflowError, setattr, c, attr, -int_max-2)
-            if sys.platform != 'win32':
+            if not sys.platform.startswith('win'):
                 self.assertRaises(TypeError, setattr, c, attr, int_max)
                 self.assertRaises(TypeError, setattr, c, attr, -int_max-1)
 

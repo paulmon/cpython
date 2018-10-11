@@ -2,7 +2,7 @@
 
 import sys
 
-if sys.platform != 'win32':  # pragma: no cover
+if not sys.platform.startswith('win'):  # pragma: no cover
     raise ImportError('win32 only')
 
 import _winapi

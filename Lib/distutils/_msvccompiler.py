@@ -177,6 +177,7 @@ def _find_exe(exe, paths=None):
 PLAT_TO_VCVARS = {
     'win32' : 'x86',
     'win-amd64' : 'x86_amd64',
+    'win-arm' : 'x86_arm',
 }
 
 # A set containing the DLLs that are guaranteed to be available for

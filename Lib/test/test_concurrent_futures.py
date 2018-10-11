@@ -153,7 +153,7 @@ class ProcessPoolForkMixin(ExecutorMixin):
     ctx = "fork"
 
     def get_context(self):
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             self.skipTest("require unix system")
         return super().get_context()
 
@@ -168,7 +168,7 @@ class ProcessPoolForkserverMixin(ExecutorMixin):
     ctx = "forkserver"
 
     def get_context(self):
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             self.skipTest("require unix system")
         return super().get_context()
 

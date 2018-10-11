@@ -19,6 +19,7 @@ class PlatformTest(unittest.TestCase):
         res = platform.architecture()
 
     @support.skip_unless_symlink
+    @unittest.skipIf(platform.win32_is_iot(), "symbolic links don't work on Windows IoT Core or nanoserver")
     def test_architecture_via_symlink(self): # issue3762
         # On Windows, the EXE needs to know where pythonXY.dll and *.pyd is at
         # so we add the directory to the path, PYTHONHOME and PYTHONPATH.

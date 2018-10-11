@@ -25,7 +25,7 @@ def zoom_height(top):
         return
     width, height, x, y = map(int, m.groups())
     newheight = top.winfo_screenheight()
-    if sys.platform == 'win32':
+    if sys.platform.startswith('win'):
         newy = 0
         newheight = newheight - 72
 

@@ -34,7 +34,7 @@ def main(regrtest_args):
                  '-r',            # Randomize test order
                  '-w',            # Re-run failed tests in verbose mode
                  ])
-    if sys.platform == 'win32':
+    if sys.platform.startswith('win'):
         args.append('-n')         # Silence alerts under Windows
     if not any(is_multiprocess_flag(arg) for arg in regrtest_args):
         args.extend(['-j', '0'])  # Use all CPU cores
@@ -42,7 +42,7 @@ def main(regrtest_args):
         args.extend(['-u', 'all,-largefile,-audio,-gui'])
     args.extend(regrtest_args)
     print(' '.join(args))
-    if sys.platform == 'win32':
+    if sys.platform.startswith('win'):
         from subprocess import call
         sys.exit(call(args))
     else:

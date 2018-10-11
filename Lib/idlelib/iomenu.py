@@ -25,7 +25,7 @@ else:
         pass
 
     locale_decode = 'ascii'
-    if sys.platform == 'win32':
+    if sys.platform.startswith('win'):
         # On Windows, we could use "mbcs". However, to give the user
         # a portable encoding name, we need to find the code page
         try:

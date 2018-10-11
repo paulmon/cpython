@@ -5,7 +5,7 @@ def callback_func(arg):
     42 / arg
     raise ValueError(arg)
 
-@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
+@unittest.skipUnless(sys.platform.startswith("win"), 'Windows-specific test')
 class call_function_TestCase(unittest.TestCase):
     # _ctypes.call_function is deprecated and private, but used by
     # Gary Bishp's readline module.  If we have it, we must test it as well.

@@ -5,6 +5,7 @@ import io
 import functools
 import pickle
 import pickletools
+import platform
 import struct
 import sys
 import unittest
@@ -1924,6 +1925,7 @@ class AbstractPickleTests(unittest.TestCase):
             self.assertEqual(y._reduce_called, 1)
 
     @no_tracing
+    @unittest.skipIf(platform.win32_editionId() == 'NanoServer', "stack overflow on nanoserver stops tests")
     def test_bad_getattr(self):
         # Issue #3514: crash when there is an infinite loop in __getattr__
         x = BadGetattr()
