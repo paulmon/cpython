@@ -312,11 +312,11 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
    should define this. */
 #       define HAVE_LARGEFILE_SUPPORT
 #elif defined(MS_WIN32)
-# ifdef _M_ARM
+#ifdef _M_ARM
 #       define PLATFORM "win-arm"
-# else // _M_ARM
+#else // _M_ARM
 #       define PLATFORM "win32"
-# endif // _M_ARM
+#endif // _M_ARM
 #       define HAVE_LARGEFILE_SUPPORT
 #       define SIZEOF_VOID_P 4
 #       define SIZEOF_OFF_T 4
