@@ -348,7 +348,7 @@ class BaseSelectorTestCase(unittest.TestCase):
 
         self.assertEqual(bufs, [MSG] * NUM_SOCKETS)
 
-    @unittest.skipIf(sys.platform == 'win32',
+    @unittest.skipIf(sys.platform.startswith('win'),
                      'select.select() cannot be used with empty fd sets')
     def test_empty_select(self):
         # Issue #23009: Make sure EpollSelector.select() works when no FD is

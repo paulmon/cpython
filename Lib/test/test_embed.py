@@ -36,7 +36,7 @@ class EmbeddingTestsMixin:
         """Runs a test in the embedded interpreter"""
         cmd = [self.test_exe]
         cmd.extend(args)
-        if env is not None and sys.platform == 'win32':
+        if env is not None and sys.platform.startswith('win'):
             # Windows requires at least the SYSTEMROOT environment variable to
             # start Python.
             env = env.copy()
@@ -197,7 +197,7 @@ class EmbeddingTests(EmbeddingTestsMixin, unittest.TestCase):
         """
         env = dict(os.environ, PYTHONPATH=os.pathsep.join(sys.path))
         out, err = self.run_embedded_interpreter("pre_initialization_api", env=env)
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             expected_path = self.test_exe
         else:
             expected_path = os.path.join(os.getcwd(), "spam")

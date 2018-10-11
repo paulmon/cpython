@@ -113,7 +113,7 @@ class EnvBuilder:
         context.executable = executable
         context.python_dir = dirname
         context.python_exe = exename
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             binname = 'Scripts'
             incpath = 'Include'
             libpath = os.path.join(env_dir, 'Lib', 'site-packages')

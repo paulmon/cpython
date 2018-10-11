@@ -8,10 +8,7 @@ from distutils.command.bdist import bdist
 from distutils.tests import support
 
 
-SKIP_MESSAGE = (None if platform.win32_is_iot() else
-                "These tests don't work on windows arm32")
-
-@unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
+@unittest.skipIf(platform.win32_is_iot(), "These tests don't work on Windows IoT Core or nanoserver")
 class BuildTestCase(support.TempdirManager,
                     unittest.TestCase):
 

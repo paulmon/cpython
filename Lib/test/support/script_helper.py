@@ -105,7 +105,7 @@ def run_python_until_end(*args, **env_vars):
     # caller is responsible to pass the full environment.
     if env_vars.pop('__cleanenv', None):
         env = {}
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             # Windows requires at least the SYSTEMROOT environment variable to
             # start Python.
             env['SYSTEMROOT'] = os.environ['SYSTEMROOT']

@@ -36,7 +36,7 @@ HKEYS = (winreg.HKEY_USERS,
          winreg.HKEY_LOCAL_MACHINE,
          winreg.HKEY_CLASSES_ROOT)
 
-NATIVE_WIN64 = (sys.platform == 'win32' and sys.maxsize > 2**32)
+NATIVE_WIN64 = (sys.platform.startswith('win') and sys.maxsize > 2**32)
 if NATIVE_WIN64:
     # Visual C++ is a 32-bit application, so we need to look in
     # the corresponding registry branch, if we're running a

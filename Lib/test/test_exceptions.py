@@ -2,6 +2,7 @@
 
 import copy
 import os
+import platform
 import sys
 import unittest
 import pickle
@@ -284,7 +285,7 @@ class ExceptionTests(unittest.TestCase):
             self.assertEqual(w.filename, None)
             self.assertEqual(w.filename2, None)
 
-    @unittest.skipUnless(sys.platform == 'win32',
+    @unittest.skipUnless(sys.platform.startswith('win'),
                          'test specific to Windows')
     def test_windows_message(self):
         """Should fill in unknown error code in Windows error message"""
@@ -514,6 +515,7 @@ class ExceptionTests(unittest.TestCase):
         self.assertEqual(x.fancy_arg, 42)
 
     @no_tracing
+    @unittest.skipIf(platform.win32_editionId() == 'NanoServer', "stack overflow on nanoserver stops tests")
     def testInfiniteRecursion(self):
         def f():
             return f()
@@ -906,6 +908,7 @@ class ExceptionTests(unittest.TestCase):
             self.assertEqual(str(klass.__new__(klass)), "")
 
     @no_tracing
+    @unittest.skipIf(platform.win32_editionId() == 'NanoServer', "stack overflow on nanoserver stops tests")
     def test_badisinstance(self):
         # Bug #2542: if issubclass(e, MyException) raises an exception,
         # it should be ignored
@@ -1118,6 +1121,7 @@ class ExceptionTests(unittest.TestCase):
         self.assertEqual(wr(), None)
 
     @no_tracing
+    @unittest.skipIf(platform.win32_editionId() == 'NanoServer', "stack overflow on nanoserver stops tests")
     def test_recursion_error_cleanup(self):
         # Same test as above, but with "recursion exceeded" errors
         class C:

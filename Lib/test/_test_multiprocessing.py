@@ -103,7 +103,7 @@ else:
 HAVE_GETVALUE = not getattr(_multiprocessing,
                             'HAVE_BROKEN_SEM_GETVALUE', False)
 
-WIN32 = (sys.platform == "win32")
+WIN32 = (sys.platform.startswith("win"))
 
 from multiprocessing.connection import wait
 
@@ -1474,7 +1474,7 @@ class _TestCondition(BaseTestCase):
             os.kill(pid, signal.SIGINT)
 
     def test_wait_result(self):
-        if isinstance(self, ProcessesMixin) and sys.platform != 'win32':
+        if isinstance(self, ProcessesMixin) and not sys.platform.startswith('win'):
             pid = os.getpid()
         else:
             pid = None
@@ -3020,7 +3020,7 @@ class _TestConnection(BaseTestCase):
             self.assertEqual(f.read(), b"foo")
 
     @unittest.skipUnless(HAS_REDUCTION, "test needs multiprocessing.reduction")
-    @unittest.skipIf(sys.platform == "win32",
+    @unittest.skipIf(sys.platform.startswith("win"),
                      "test semantics don't make sense on Windows")
     @unittest.skipIf(MAXFD <= 256,
                      "largest assignable fd number is too small")
@@ -3057,7 +3057,7 @@ class _TestConnection(BaseTestCase):
         os.write(conn.fileno(), b"\0")
 
     @unittest.skipUnless(HAS_REDUCTION, "test needs multiprocessing.reduction")
-    @unittest.skipIf(sys.platform == "win32", "doesn't make sense on Windows")
+    @unittest.skipIf(sys.platform.startswith("win"), "doesn't make sense on Windows")
     def test_missing_fd_transfer(self):
         # Check that exception is raised when received data is not
         # accompanied by a file descriptor in ancillary data.
@@ -3645,7 +3645,7 @@ class _TestImportStar(unittest.TestCase):
 
     def test_import(self):
         modules = self.get_module_names()
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             modules.remove('multiprocessing.popen_fork')
             modules.remove('multiprocessing.popen_forkserver')
             modules.remove('multiprocessing.popen_spawn_posix')
@@ -4418,7 +4418,7 @@ class TestStartMethod(unittest.TestCase):
 
     def test_get_all(self):
         methods = multiprocessing.get_all_start_methods()
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             self.assertEqual(methods, ['spawn'])
         else:
             self.assertTrue(methods == ['fork', 'spawn'] or
@@ -4437,7 +4437,7 @@ class TestStartMethod(unittest.TestCase):
             self.fail("failed spawning forkserver or grandchild")
 
 
-@unittest.skipIf(sys.platform == "win32",
+@unittest.skipIf(sys.platform.startswith("win"),
                  "test semantics don't make sense on Windows")
 class TestSemaphoreTracker(unittest.TestCase):
 

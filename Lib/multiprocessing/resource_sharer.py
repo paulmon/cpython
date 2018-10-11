@@ -21,7 +21,7 @@ from . import util
 __all__ = ['stop']
 
 
-if sys.platform == 'win32':
+if sys.platform.startswith('win'):
     __all__ += ['DupSocket']
 
     class DupSocket(object):

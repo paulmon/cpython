@@ -641,7 +641,7 @@ class PathsTests(unittest.TestCase):
         unload("test_trailing_slash")
 
     # Regression test for http://bugs.python.org/issue3677.
-    @unittest.skipUnless(sys.platform == 'win32', 'Windows-specific')
+    @unittest.skipUnless(sys.platform.startswith('win') and not platform.win32_editionId() == 'NanoServer', 'Windows-specific')
     def test_UNC_path(self):
         with open(os.path.join(self.path, 'test_unc_path.py'), 'w') as f:
             f.write("testdata = 'test_unc_path'")

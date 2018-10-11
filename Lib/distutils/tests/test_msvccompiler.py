@@ -9,8 +9,8 @@ from distutils.tests import support
 from test.support import run_unittest
 
 
-SKIP_MESSAGE = (None if sys.platform == "win32" and platform.win32_is_iot() else
-                "These tests are only for win32")
+SKIP_MESSAGE = (None if sys.platform.startswith("win") and not platform.win32_is_iot() else
+                "These tests require Windows x86 or x64.  Windows IoT Core and nanoserver are not supported")
 
 @unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
 class msvccompilerTestCase(support.TempdirManager,

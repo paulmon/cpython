@@ -155,7 +155,7 @@ def search_function(encoding):
 # Register the search_function in the Python codec registry
 codecs.register(search_function)
 
-if sys.platform == 'win32':
+if sys.platform.startswith('win'):
     def _alias_mbcs(encoding):
         try:
             import _winapi

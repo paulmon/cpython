@@ -235,7 +235,7 @@ class TestSysConfig(unittest.TestCase):
     def test_symlink(self):
         # On Windows, the EXE needs to know where pythonXY.dll is at so we have
         # to add the directory to the path.
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             os.environ["PATH"] = "{};{}".format(
                 os.path.dirname(sys.executable), os.environ["PATH"])
 
@@ -281,7 +281,7 @@ class TestSysConfig(unittest.TestCase):
             _main()
         self.assertTrue(len(output.getvalue().split('\n')) > 0)
 
-    @unittest.skipIf(sys.platform == "win32", "Does not apply to Windows")
+    @unittest.skipIf(sys.platform.startswith("win"), "Does not apply to Windows")
     def test_ldshared_value(self):
         ldflags = sysconfig.get_config_var('LDFLAGS')
         ldshared = sysconfig.get_config_var('LDSHARED')
