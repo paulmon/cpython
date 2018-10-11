@@ -1,6 +1,5 @@
 from test.test_json import PyTest, CTest
-import platform
-import unittest
+
 
 class JSONTestObject:
     pass
@@ -64,6 +63,7 @@ class TestRecursion:
             pass
         else:
             self.fail("didn't raise ValueError on default recursion")
+
 
     def test_highly_nested_objects_decoding(self):
         # test that loading highly-nested objects doesn't segfault when C

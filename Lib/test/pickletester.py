@@ -5,7 +5,6 @@ import io
 import functools
 import pickle
 import pickletools
-import platform
 import struct
 import sys
 import unittest
