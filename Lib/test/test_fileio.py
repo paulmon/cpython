@@ -177,7 +177,6 @@ class AutoFileTests:
         finally:
             os.close(fd)
 
-    @unittest.skipIf(platform.win32_editionId() == 'NanoServer', "stack overflow on nanoserver stops tests")
     def testRecursiveRepr(self):
         # Issue #25455
         with swap_attr(self.f, 'name', self.f):
