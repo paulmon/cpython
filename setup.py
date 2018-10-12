@@ -1199,7 +1199,7 @@ class PyBuildExt(build_ext):
                 '_sqlite/util.c', ]
 
             sqlite_defines = []
-            if host_platform != "win32":
+            if not host_platform.startswith("win"):
                 sqlite_defines.append(('MODULE_NAME', '"sqlite3"'))
             else:
                 sqlite_defines.append(('MODULE_NAME', '\\"sqlite3\\"'))
@@ -1322,7 +1322,7 @@ class PyBuildExt(build_ext):
             missing.append('_gdbm')
 
         # Unix-only modules
-        if host_platform != 'win32':
+        if not host_platform.startswith('win'):
             # Steen Lumholt's termios module
             exts.append( Extension('termios', ['termios.c']) )
             # Jeremy Hylton's rlimit interface
@@ -1561,7 +1561,7 @@ class PyBuildExt(build_ext):
         self.detect_ctypes(inc_dirs, lib_dirs)
 
         # Richard Oudkerk's multiprocessing module
-        if host_platform == 'win32':        # Windows
+        if host_platform.startswith('win'): # Windows
             macros = dict()
             libraries = ['ws2_32']
 
@@ -1585,7 +1585,7 @@ class PyBuildExt(build_ext):
             macros = dict()
             libraries = ['rt']
 
-        if host_platform == 'win32':
+        if host_platform.startswith('win'):
             multiprocessing_srcs = [ '_multiprocessing/multiprocessing.c',
                                      '_multiprocessing/semaphore.c',
                                    ]
@@ -2182,7 +2182,7 @@ class PyBuildExt(build_ext):
         return ssl_ext, hashlib_ext
 
     def _detect_nis(self, inc_dirs, lib_dirs):
-        if host_platform in {'win32', 'cygwin', 'qnx6'}:
+        if host_platform in {'win32', 'win-arm', 'cygwin', 'qnx6'}:
             return None
 
         libs = []

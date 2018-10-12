@@ -415,7 +415,7 @@ class ImportSideEffectTests(unittest.TestCase):
         self.assertTrue(hasattr(builtins, "help"))
 
     def test_aliasing_mbcs(self):
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             import locale
             if locale.getdefaultlocale()[1].startswith('cp'):
                 for value in encodings.aliases.aliases.values():
@@ -504,7 +504,7 @@ class StartupImportTests(unittest.TestCase):
         self.assertTrue(r, "'__interactivehook__' not added by enablerlcompleter()")
 
 
-@unittest.skipUnless(sys.platform == 'win32', "only supported on Windows")
+@unittest.skipUnless(sys.platform.startswith('win'), "only supported on Windows")
 class _pthFileTests(unittest.TestCase):
 
     def _create_underpth_exe(self, lines):

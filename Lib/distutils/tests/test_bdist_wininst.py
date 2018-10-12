@@ -6,10 +6,7 @@ from test.support import run_unittest
 from distutils.command.bdist_wininst import bdist_wininst
 from distutils.tests import support
 
-SKIP_MESSAGE = (None if platform.win32_editionId() != 'IoTUAP' else
-                "These tests don't work on windows arm32")
-
-@unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
+@unittest.skipIf(platform.win32_is_iot(), "These tests don't work on Windows IoT Core or nanoserver")
 class BuildWinInstTestCase(support.TempdirManager,
                            support.LoggingSilencer,
                            unittest.TestCase):

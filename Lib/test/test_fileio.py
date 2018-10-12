@@ -2,6 +2,7 @@
 
 import sys
 import os
+import platform
 import io
 import errno
 import unittest
@@ -371,7 +372,7 @@ class OtherFileTests:
             self.assertEqual(f.isatty(), False)
             f.close()
 
-            if sys.platform != "win32":
+            if not sys.platform.startswith("win"):
                 try:
                     f = self.FileIO("/dev/tty", "a")
                 except OSError:
@@ -464,7 +465,7 @@ class OtherFileTests:
     def testInvalidFd(self):
         self.assertRaises(ValueError, self.FileIO, -10)
         self.assertRaises(OSError, self.FileIO, make_bad_fd())
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             import msvcrt
             self.assertRaises(OSError, msvcrt.get_osfhandle, make_bad_fd())
 

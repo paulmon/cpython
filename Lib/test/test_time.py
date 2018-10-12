@@ -987,7 +987,7 @@ class TestCPyTime(CPyTimeTestCase, unittest.TestCase):
             us = us_converter(ns)
             return divmod(us, SEC_TO_US)
 
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             from _testcapi import LONG_MIN, LONG_MAX
 
             # On Windows, timeval.tv_sec type is a C long

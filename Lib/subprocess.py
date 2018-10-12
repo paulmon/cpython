@@ -42,7 +42,7 @@ getstatusoutput(...): Runs a command in the shell, waits for it to complete,
 """
 
 import sys
-_mswindows = (sys.platform == "win32")
+_mswindows = (sys.platform.startswith("win"))
 
 import io
 import os

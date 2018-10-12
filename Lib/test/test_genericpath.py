@@ -418,7 +418,7 @@ class CommonTest(GenericTest):
             self.assertIn(b"foo", self.pathmodule.abspath(b"foo"))
 
         # avoid UnicodeDecodeError on Windows
-        undecodable_path = b'' if sys.platform == 'win32' else b'f\xf2\xf2'
+        undecodable_path = b'' if sys.platform.startswith('win') else b'f\xf2\xf2'
 
         # Abspath returns bytes when the arg is bytes
         with warnings.catch_warnings():
@@ -461,7 +461,7 @@ class CommonTest(GenericTest):
         # UTF-8 name. Windows allows creating a directory with an
         # arbitrary bytes name, but fails to enter this directory
         # (when the bytes name is used).
-        and sys.platform not in ('win32', 'darwin')):
+        and sys.platform not in ('win32', 'win-arm', 'darwin')):
             name = support.TESTFN_UNDECODABLE
         elif support.TESTFN_NONASCII:
             name = support.TESTFN_NONASCII

@@ -52,8 +52,8 @@ if defined BUILDX64 (
 )
 
 if defined BUILDARM (
-    if defined REBUILD ( call "%PCBUILD%build.bat" -p ARM -e %DEBUG% -r --no-tkinter --no-vs
-    ) else if not exist "%Py_OutDir%arm32\python%_SUFFIX%.exe" call "%PCBUILD%build.bat" -p ARM -E %DEBUG% --no-tkinter --no-vs
+    if defined REBUILD ( call "%PCBUILD%build.bat" -p ARM -e %DEBUG% -r --no-tkinter
+    ) else if not exist "%Py_OutDir%arm32\python%_SUFFIX%.exe" call "%PCBUILD%build.bat" -p ARM -E %DEBUG% --no-tkinter
     if errorlevel 1 goto :eof
 
     %PYTHON_EXE% %D%sync_win_iot.py %DEBUG% %TEST% %CLEAN% -p arm32

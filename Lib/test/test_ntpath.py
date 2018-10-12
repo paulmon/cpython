@@ -385,7 +385,7 @@ class TestNtpath(unittest.TestCase):
             # Make sure different files are really different
             self.assertFalse(ntpath.sameopenfile(tf1.fileno(), tf2.fileno()))
             # Make sure invalid values don't cause issues on win32
-            if sys.platform == "win32":
+            if sys.platform.startswith("win"):
                 with self.assertRaises(OSError):
                     # Invalid file descriptors shouldn't display assert
                     # dialogs (#4804)
@@ -409,7 +409,7 @@ class TestNtpath(unittest.TestCase):
         with support.temp_dir() as d:
             self.assertFalse(ntpath.ismount(d))
 
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             #
             # Make sure the current folder isn't the root folder
             # (or any other volume root). The drive-relative

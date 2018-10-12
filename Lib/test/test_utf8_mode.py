@@ -11,7 +11,7 @@ from test import support
 from test.support.script_helper import assert_python_ok, assert_python_failure
 
 
-MS_WINDOWS = (sys.platform == 'win32')
+MS_WINDOWS = (sys.platform.startswith('win'))
 
 
 class UTF8ModeTests(unittest.TestCase):

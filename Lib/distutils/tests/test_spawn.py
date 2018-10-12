@@ -30,7 +30,7 @@ class SpawnTestCase(support.TempdirManager,
 
         # creating something executable
         # through the shell that returns 1
-        if sys.platform != 'win32':
+        if not sys.platform.startswith('win'):
             exe = os.path.join(tmpdir, 'foo.sh')
             self.write_file(exe, '#!%s\nexit 1' % unix_shell)
         else:
@@ -41,7 +41,7 @@ class SpawnTestCase(support.TempdirManager,
         self.assertRaises(DistutilsExecError, spawn, [exe])
 
         # now something that works
-        if sys.platform != 'win32':
+        if not sys.platform.startswith('win'):
             exe = os.path.join(tmpdir, 'foo.sh')
             self.write_file(exe, '#!%s\nexit 0' % unix_shell)
         else:

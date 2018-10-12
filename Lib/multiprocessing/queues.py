@@ -41,7 +41,7 @@ class Queue(object):
         self._reader, self._writer = connection.Pipe(duplex=False)
         self._rlock = ctx.Lock()
         self._opid = os.getpid()
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             self._wlock = None
         else:
             self._wlock = ctx.Lock()
@@ -51,7 +51,7 @@ class Queue(object):
 
         self._after_fork()
 
-        if sys.platform != 'win32':
+        if not sys.platform.startswith('win'):
             register_after_fork(self, Queue._after_fork)
 
     def __getstate__(self):
@@ -210,7 +210,7 @@ class Queue(object):
         nwait = notempty.wait
         bpopleft = buffer.popleft
         sentinel = _sentinel
-        if sys.platform != 'win32':
+        if not sys.platform.startswith('win'):
             wacquire = writelock.acquire
             wrelease = writelock.release
         else:
@@ -331,7 +331,7 @@ class SimpleQueue(object):
         self._reader, self._writer = connection.Pipe(duplex=False)
         self._rlock = ctx.Lock()
         self._poll = self._reader.poll
-        if sys.platform == 'win32':
+        if sys.platform.startswith('win'):
             self._wlock = None
         else:
             self._wlock = ctx.Lock()

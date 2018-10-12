@@ -784,7 +784,7 @@ class BasicSocketTests(unittest.TestCase):
             self.assertEqual(paths.cafile, CERTFILE)
             self.assertEqual(paths.capath, CAPATH)
 
-    @unittest.skipUnless(sys.platform == "win32", "Windows specific")
+    @unittest.skipUnless(sys.platform.startswith("win"), "Windows specific")
     def test_enum_certificates(self):
         self.assertTrue(ssl.enum_certificates("CA"))
         self.assertTrue(ssl.enum_certificates("ROOT"))
@@ -809,7 +809,7 @@ class BasicSocketTests(unittest.TestCase):
         serverAuth = "1.3.6.1.5.5.7.3.1"
         self.assertIn(serverAuth, trust_oids)
 
-    @unittest.skipUnless(sys.platform == "win32", "Windows specific")
+    @unittest.skipUnless(sys.platform.startswith("win"), "Windows specific")
     def test_enum_crls(self):
         self.assertTrue(ssl.enum_crls("CA"))
         self.assertRaises(TypeError, ssl.enum_crls)
@@ -1319,7 +1319,7 @@ class ContextTests(unittest.TestCase):
         with self.assertRaisesRegex(ssl.SSLError, "not enough data"):
             ctx.load_verify_locations(cadata=b"broken")
 
-    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP' and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
+    @unittest.skipIf(platform.win32_is_iot() and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
     def test_load_dh_params(self):
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
         ctx.load_dh_params(DHFILE)
@@ -1452,7 +1452,7 @@ class ContextTests(unittest.TestCase):
         self.assertRaises(TypeError, ctx.load_default_certs, None)
         self.assertRaises(TypeError, ctx.load_default_certs, 'SERVER_AUTH')
 
-    @unittest.skipIf(sys.platform == "win32", "not-Windows specific")
+    @unittest.skipIf(sys.platform.startswith("win"), "not-Windows specific")
     @unittest.skipIf(IS_LIBRESSL, "LibreSSL doesn't support env vars")
     def test_load_default_certs_env(self):
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -1462,7 +1462,7 @@ class ContextTests(unittest.TestCase):
             ctx.load_default_certs()
             self.assertEqual(ctx.cert_store_stats(), {"crl": 0, "x509": 1, "x509_ca": 0})
 
-    @unittest.skipUnless(sys.platform == "win32", "Windows specific")
+    @unittest.skipUnless(sys.platform.startswith("win"), "Windows specific")
     @unittest.skipIf(hasattr(sys, "gettotalrefcount"), "Debug build does not share environment between CRTs")
     def test_load_default_certs_env_windows(self):
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -1621,7 +1621,7 @@ class SSLErrorTests(unittest.TestCase):
         self.assertEqual(str(e), "foo")
         self.assertEqual(e.errno, 1)
 
-    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP' and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
+    @unittest.skipIf(platform.win32_is_iot() and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
     def test_lib_reason(self):
         # Test the library and reason attributes
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
@@ -3726,7 +3726,7 @@ class ThreadedTests(unittest.TestCase):
                                    sni_name=hostname)
         self.assertIs(stats['compression'], None)
 
-    @unittest.skipIf(platform.win32_editionId() == 'IoTUAP' and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
+    @unittest.skipIf(platform.win32_is_iot() and 'python_d' in sys.executable, "Crashes on debug python builds on Windows IoT Core")
     def test_dh_params(self):
         # Check we can get a connection with ephemeral Diffie-Hellman
         client_context, server_context, hostname = testing_context()

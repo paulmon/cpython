@@ -1126,7 +1126,7 @@ class GeneralModuleTests(unittest.TestCase):
         except ImportError:
             self.skipTest('could not import needed symbols from socket')
 
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             try:
                 inet_pton(AF_INET6, '::')
             except OSError as e:
@@ -1216,7 +1216,7 @@ class GeneralModuleTests(unittest.TestCase):
         except ImportError:
             self.skipTest('could not import needed symbols from socket')
 
-        if sys.platform == "win32":
+        if sys.platform.startswith("win"):
             try:
                 inet_ntop(AF_INET6, b'\x00' * 16)
             except OSError as e:
@@ -1622,7 +1622,7 @@ class GeneralModuleTests(unittest.TestCase):
 
     @unittest.skipUnless(support.IPV6_ENABLED, 'IPv6 required for this test.')
     @unittest.skipUnless(
-        sys.platform == 'win32',
+        sys.platform.startswith('win'),
         'Numeric scope id does not work or undocumented')
     def test_getaddrinfo_ipv6_scopeid_numeric(self):
         # Also works on Linux and Mac OS X, but is not documented (?)
@@ -1650,7 +1650,7 @@ class GeneralModuleTests(unittest.TestCase):
 
     @unittest.skipUnless(support.IPV6_ENABLED, 'IPv6 required for this test.')
     @unittest.skipUnless(
-        sys.platform == 'win32',
+        sys.platform.startswith('win'),
         'Numeric scope id does not work or undocumented')
     def test_getnameinfo_ipv6_scopeid_numeric(self):
         # Also works on Linux (undocumented), but does not work on Mac OS X
