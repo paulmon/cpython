@@ -10,7 +10,7 @@ class Test_OpenGL_libs(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         lib_gl = lib_glu = lib_gle = None
-        if sys.platform.startswith("win"):
+        if sys.platform == "win32":
             lib_gl = find_library("OpenGL32")
             lib_glu = find_library("Glu32")
         elif sys.platform == "darwin":

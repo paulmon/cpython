@@ -675,7 +675,7 @@ def getnode(*, getters=None):
     if _node is not None:
         return _node
 
-    if sys.platform.startswith('win'):
+    if sys.platform == 'win32':
         getters = _NODE_GETTERS_WIN32
     else:
         getters = _NODE_GETTERS_UNIX

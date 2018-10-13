@@ -2,7 +2,6 @@
 
 import copy
 import os
-import platform
 import sys
 import unittest
 import pickle
@@ -285,7 +284,7 @@ class ExceptionTests(unittest.TestCase):
             self.assertEqual(w.filename, None)
             self.assertEqual(w.filename2, None)
 
-    @unittest.skipUnless(sys.platform.startswith('win'),
+    @unittest.skipUnless(sys.platform == 'win32',
                          'test specific to Windows')
     def test_windows_message(self):
         """Should fill in unknown error code in Windows error message"""

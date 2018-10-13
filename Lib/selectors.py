@@ -309,7 +309,7 @@ class SelectSelector(_BaseSelectorImpl):
         self._writers.discard(key.fd)
         return key
 
-    if sys.platform.startswith('win'):
+    if sys.platform == 'win32':
         def _select(self, r, w, _, timeout=None):
             r, w, x = select.select(r, w, w, timeout)
             return r, w + x, []

@@ -192,7 +192,7 @@ class PointersTestCase(unittest.TestCase):
         self.assertEqual(bool(CFUNCTYPE(None)(42)), True)
 
         # COM methods are boolean True:
-        if sys.platform.startswith("win"):
+        if sys.platform == "win32":
             mth = WINFUNCTYPE(None)(42, "name", (), None)
             self.assertEqual(bool(mth), True)
 

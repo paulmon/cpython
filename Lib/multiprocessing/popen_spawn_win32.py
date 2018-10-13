@@ -15,7 +15,7 @@ __all__ = ['Popen']
 #
 
 TERMINATE = 0x10000
-WINEXE = (sys.platform.startswith('win') and getattr(sys, 'frozen', False))
+WINEXE = (sys.platform == 'win32' and getattr(sys, 'frozen', False))
 WINSERVICE = sys.executable.lower().endswith("pythonservice.exe")
 
 #

@@ -115,7 +115,7 @@ def make_tarball(base_name, base_dir, compress="gzip", verbose=0, dry_run=0,
         warn("'compress' will be deprecated.", PendingDeprecationWarning)
         # the option varies depending on the platform
         compressed_name = archive_name + compress_ext[compress]
-        if sys.platform.startswith('win'):
+        if sys.platform == 'win32':
             cmd = [compress, archive_name, compressed_name]
         else:
             cmd = [compress, '-f', archive_name]

@@ -185,7 +185,7 @@
 
     <!-- The version and platform tag to include in .pyd filenames -->
     <PydTag Condition="$(ArchName) == 'win32'">.cp$(MajorVersionNumber)$(MinorVersionNumber)-win32</PydTag>
-    <PydTag Condition="$(ArchName) == 'arm32'">.cp$(MajorVersionNumber)$(MinorVersionNumber)-win_arm32</PydTag>
+    <PydTag Condition="$(ArchName) == 'arm32'">.cp$(MajorVersionNumber)$(MinorVersionNumber)-win_arm</PydTag>
     <PydTag Condition="$(ArchName) == 'amd64'">.cp$(MajorVersionNumber)$(MinorVersionNumber)-win_amd64</PydTag>
     
     <!-- The version number for sys.winver -->

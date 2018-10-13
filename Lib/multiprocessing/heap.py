@@ -23,7 +23,7 @@ __all__ = ['BufferWrapper']
 # Inheritable class which wraps an mmap, and from which blocks can be allocated
 #
 
-if sys.platform.startswith('win'):
+if sys.platform == 'win32':
 
     import _winapi
 

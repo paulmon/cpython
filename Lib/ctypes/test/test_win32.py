@@ -7,7 +7,7 @@ from test import support
 import _ctypes_test
 
 # Only windows 32-bit has different calling conventions.
-@unittest.skipUnless(sys.platform.startswith("win"), 'Windows-specific test')
+@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
 @unittest.skipUnless(sizeof(c_void_p) == sizeof(c_int),
                      "sizeof c_void_p and c_int differ")
 class WindowsTestCase(unittest.TestCase):
@@ -37,7 +37,7 @@ class WindowsTestCase(unittest.TestCase):
         # (4 bytes missing) or wrong calling convention
         self.assertRaises(ValueError, IsWindow, None)
 
-@unittest.skipUnless(sys.platform.startswith("win"), 'Windows-specific test')
+@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
 class FunctionCallTestCase(unittest.TestCase):
     @unittest.skipUnless('MSC' in sys.version, "SEH only supported by MSC")
     @unittest.skipIf(sys.executable.lower().endswith('_d.exe'),
@@ -56,7 +56,7 @@ class FunctionCallTestCase(unittest.TestCase):
         windll.user32.GetDesktopWindow()
 
 
-@unittest.skipUnless(sys.platform.startswith("win"), 'Windows-specific test')
+@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
 class TestWintypes(unittest.TestCase):
     def test_HWND(self):
         from ctypes import wintypes
@@ -80,7 +80,7 @@ class TestWintypes(unittest.TestCase):
         self.assertEqual(ex.text, "text")
         self.assertEqual(ex.details, ("details",))
 
-@unittest.skipUnless(sys.platform.startswith("win"), 'Windows-specific test')
+@unittest.skipUnless(sys.platform == "win32", 'Windows-specific test')
 class TestWinError(unittest.TestCase):
     def test_winerror(self):
         # see Issue 16169

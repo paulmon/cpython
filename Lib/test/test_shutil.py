@@ -1456,7 +1456,7 @@ class TestWhich(unittest.TestCase):
         base_dir = os.path.dirname(self.dir)
         with support.change_cwd(path=self.dir):
             rv = shutil.which(self.file, path=base_dir)
-            if sys.platform.startswith("win"):
+            if sys.platform == "win32":
                 # Windows: current directory implicitly on PATH
                 self.assertEqual(rv, os.path.join(os.curdir, self.file))
             else:
@@ -1484,7 +1484,7 @@ class TestWhich(unittest.TestCase):
         rv = shutil.which("foo.exe", path=self.dir)
         self.assertIsNone(rv)
 
-    @unittest.skipUnless(sys.platform.startswith("win"),
+    @unittest.skipUnless(sys.platform == "win32",
                          "pathext check is Windows-only")
     def test_pathext_checking(self):
         # Ask for the file without the ".exe" extension, then ensure that

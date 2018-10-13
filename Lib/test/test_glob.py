@@ -161,7 +161,7 @@ class GlobTests(unittest.TestCase):
         eq(self.glob('sym1'), [self.norm('sym1')])
         eq(self.glob('sym2'), [self.norm('sym2')])
 
-    @unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific test")
+    @unittest.skipUnless(sys.platform == "win32", "Win32 specific test")
     def test_glob_magic_in_drive(self):
         eq = self.assertSequencesEqual_noorder
         eq(glob.glob('*:'), [])
@@ -186,7 +186,7 @@ class GlobTests(unittest.TestCase):
         check('[[_/*?*/_]]', '[[][[]_/[*][?][*]/_]]')
         check('/[[_/*?*/_]]/', '/[[][[]_/[*][?][*]/_]]/')
 
-    @unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific test")
+    @unittest.skipUnless(sys.platform == "win32", "Win32 specific test")
     def test_escape_windows(self):
         check = self.check_escape
         check('?:?', '?:[?]')

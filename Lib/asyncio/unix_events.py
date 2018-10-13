@@ -32,7 +32,7 @@ __all__ = (
 )
 
 
-if sys.platform.startswith('win'):  # pragma: no cover
+if sys.platform == 'win32':  # pragma: no cover
     raise ImportError('Signals are not really supported on Windows')
 
 
