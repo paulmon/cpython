@@ -148,7 +148,7 @@ class BasicTest(BaseTest):
             out, err = check_output(cmd)
             self.assertEqual(out.strip(), expected.encode())
 
-    if sys.platform.startswith('win'):
+    if sys.platform == 'win32':
         ENV_SUBDIRS = (
             ('Scripts',),
             ('Include',),

@@ -56,6 +56,8 @@ EXCLUDED_FILES = {
 INCLUDED_FILES = {
     'libcrypto-1_1',
     'libssl-1_1',
+    'libcrypto-1_1-x64',
+    'libssl-1_1-x64',
 }
 
 def is_debug(p):

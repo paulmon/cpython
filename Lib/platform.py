@@ -259,7 +259,7 @@ _ver_output = re.compile(r'(?:([\w ]+) ([\w.]+) '
 
 def _syscmd_ver(system='', release='', version='',
 
-               supported_platforms=('win32', 'win-arm', 'win16', 'dos')):
+               supported_platforms=('win32', 'win16', 'dos')):
 
     """ Tries to figure out the OS version used and returns
         a tuple (system, release, version).
@@ -539,7 +539,7 @@ def system_alias(system, release, version):
         else:
             version = '64bit'
 
-    elif system in ('win32', 'win-arm', 'win16'):
+    elif system in ('win32', 'win16'):
         # In case one of the other tricks
         system = 'Windows'
 
@@ -609,7 +609,7 @@ def _syscmd_uname(option, default=''):
 
     """ Interface to the system's uname command.
     """
-    if sys.platform in ('dos', 'win32', 'win-arm', 'win16'):
+    if sys.platform in ('dos', 'win32', 'win16'):
         # XXX Others too ?
         return default
 
@@ -631,7 +631,7 @@ def _syscmd_file(target, default=''):
         default in case the command should fail.
 
     """
-    if sys.platform in ('dos', 'win32', 'win-arm', 'win16'):
+    if sys.platform in ('dos', 'win32', 'win16'):
         # XXX Others too ?
         return default
 
@@ -651,7 +651,6 @@ def _syscmd_file(target, default=''):
 # defaults given as parameters
 _default_architecture = {
     'win32': ('', 'WindowsPE'),
-    'win-arm': ('', 'WindowsPE'),
     'win16': ('', 'Windows'),
     'dos': ('', 'MSDOS'),
 }
@@ -784,7 +783,7 @@ def uname():
         use_syscmd_ver = 1
 
         # Try win32_ver() on win32 platforms
-        if system.startswith('win'):
+        if system == 'win32':
             release, version, csd, ptype = win32_ver()
             if release and version:
                 use_syscmd_ver = 0
@@ -822,9 +821,9 @@ def uname():
 
         # In case we still don't know anything useful, we'll try to
         # help ourselves
-        if system in ('win32', 'win-arm', 'win16'):
+        if system in ('win32', 'win16'):
             if not version:
-                if system == 'win32' or system == 'win-arm':
+                if system == 'win32':
                     version = '32bit'
                 else:
                     version = '16bit'

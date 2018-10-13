@@ -102,7 +102,7 @@ class BuildCLibTestCase(support.TempdirManager,
         cmd.distribution.libraries = 'WONTWORK'
         self.assertRaises(DistutilsSetupError, cmd.finalize_options)
 
-    @unittest.skipIf(sys.platform.startswith('win'), "can't test on Windows")
+    @unittest.skipIf(sys.platform == 'win32', "can't test on Windows")
     def test_run(self):
         pkg_dir, dist = self.create_dist()
         cmd = build_clib(dist)

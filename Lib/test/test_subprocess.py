@@ -35,7 +35,7 @@ except ImportError:
 if support.PGO:
     raise unittest.SkipTest("test is not helpful for PGO")
 
-mswindows = (sys.platform.startswith("win"))
+mswindows = (sys.platform == "win32")
 
 #
 # Depends on the following external programs: Python
@@ -632,7 +632,7 @@ class ProcessTestCase(BaseTestCase):
 
     # Windows requires at least the SYSTEMROOT environment variable to start
     # Python
-    @unittest.skipIf(sys.platform.startswith('win'),
+    @unittest.skipIf(sys.platform == 'win32',
                      'cannot test an empty env on Windows')
     @unittest.skipIf(sysconfig.get_config_var('Py_ENABLE_SHARED') == 1,
                      'The Python shared library cannot be loaded '

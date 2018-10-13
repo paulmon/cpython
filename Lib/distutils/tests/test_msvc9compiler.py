@@ -91,7 +91,7 @@ _CLEANED_MANIFEST = """\
   </dependency>
 </assembly>"""
 
-if sys.platform.startswith("win") and not platform.win32_is_iot():
+if sys.platform=="win32" and not platform.win32_is_iot():
     from distutils.msvccompiler import get_build_version
     if get_build_version()>=8.0:
         SKIP_MESSAGE = None

@@ -38,6 +38,8 @@ def get_platform ():
     if os.name == 'nt':
         if 'amd64' in sys.version.lower():
             return 'win-amd64'
+        if '(arm)' in sys.version.lower():
+            return 'win-arm'
         return sys.platform
 
     # Set for cross builds explicitly

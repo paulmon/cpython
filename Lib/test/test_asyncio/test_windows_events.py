@@ -4,7 +4,7 @@ import sys
 import unittest
 from unittest import mock
 
-if not sys.platform.startswith('win'):
+if sys.platform != 'win32':
     raise unittest.SkipTest('Windows only')
 
 import _overlapped
