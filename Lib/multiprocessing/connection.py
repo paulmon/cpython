@@ -30,7 +30,7 @@ try:
     import _winapi
     from _winapi import WAIT_OBJECT_0, WAIT_ABANDONED_0, WAIT_TIMEOUT, INFINITE
 except ImportError:
-    if sys.platform.startswith('win'):
+    if sys.platform == 'win32':
         raise
     _winapi = None
 
@@ -51,7 +51,7 @@ if hasattr(socket, 'AF_UNIX'):
     default_family = 'AF_UNIX'
     families += ['AF_UNIX']
 
-if sys.platform.startswith('win'):
+if sys.platform == 'win32':
     default_family = 'AF_PIPE'
     families += ['AF_PIPE']
 
@@ -84,10 +84,10 @@ def _validate_family(family):
     '''
     Checks if the family is valid for the current environment.
     '''
-    if not sys.platform.startswith('win') and family == 'AF_PIPE':
+    if sys.platform != 'win32' and family == 'AF_PIPE':
         raise ValueError('Family %s is not recognized.' % family)
 
-    if sys.platform.startswith('win') and family == 'AF_UNIX':
+    if sys.platform == 'win32' and family == 'AF_UNIX':
         # double check
         if not hasattr(socket, family):
             raise ValueError('Family %s is not recognized.' % family)
@@ -501,7 +501,7 @@ def Client(address, family=None, authkey=None):
     return c
 
 
-if not sys.platform.startswith('win'):
+if sys.platform != 'win32':
 
     def Pipe(duplex=True):
         '''
@@ -623,7 +623,7 @@ def SocketClient(address):
 # Definitions for connections based on named pipes
 #
 
-if sys.platform.startswith('win'):
+if sys.platform == 'win32':
 
     class PipeListener(object):
         '''
@@ -789,7 +789,7 @@ def XmlClient(*args, **kwds):
 # Wait
 #
 
-if sys.platform.startswith('win'):
+if sys.platform == 'win32':
 
     def _exhaustive_wait(handles, timeout):
         # Return ALL handles which are currently signalled.  (Only
@@ -930,7 +930,7 @@ else:
 # Make connection and socket objects sharable if possible
 #
 
-if sys.platform.startswith('win'):
+if sys.platform == 'win32':
     def reduce_connection(conn):
         handle = conn.fileno()
         with socket.fromfd(handle, socket.AF_INET, socket.SOCK_STREAM) as s:

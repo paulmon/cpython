@@ -21,7 +21,7 @@ from . import context
 __all__ = ['send_handle', 'recv_handle', 'ForkingPickler', 'register', 'dump']
 
 
-HAVE_SEND_HANDLE = (sys.platform.startswith('win') or
+HAVE_SEND_HANDLE = (sys.platform == 'win32' or
                     (hasattr(socket, 'CMSG_LEN') and
                      hasattr(socket, 'SCM_RIGHTS') and
                      hasattr(socket.socket, 'sendmsg')))
@@ -63,7 +63,7 @@ def dump(obj, file, protocol=None):
 # Platform specific definitions
 #
 
-if sys.platform.startswith('win'):
+if sys.platform == 'win32':
     # Windows
     __all__ += ['DupHandle', 'duplicate', 'steal_handle']
     import _winapi
@@ -226,7 +226,7 @@ register(functools.partial, _reduce_partial)
 # Make sockets picklable
 #
 
-if sys.platform.startswith('win'):
+if sys.platform == 'win32':
     def _reduce_socket(s):
         from .resource_sharer import DupSocket
         return _rebuild_socket, (DupSocket(s),)
@@ -254,7 +254,7 @@ class AbstractReducer(metaclass=ABCMeta):
     send_handle = send_handle
     recv_handle = recv_handle
 
-    if sys.platform.startswith('win'):
+    if sys.platform == 'win32':
         steal_handle = steal_handle
         duplicate = duplicate
         DupHandle = DupHandle

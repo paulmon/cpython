@@ -11,7 +11,7 @@ except ImportError:
 
 # Valid arguments for the ...Awareness call below are defined in the following.
 # https://msdn.microsoft.com/en-us/library/windows/desktop/dn280512(v=vs.85).aspx
-if sys.platform.startswith('win'):
+if sys.platform == 'win32':
     import ctypes
     PROCESS_SYSTEM_DPI_AWARE = 1
     try:

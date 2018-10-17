@@ -461,7 +461,7 @@ class MetadataTestCase(support.TempdirManager, support.EnvironGuard,
                 self.assertIn(user_filename, files)
 
             # win32-style
-            if sys.platform.startswith('win'):
+            if sys.platform == 'win32':
                 # home drive should be found
                 os.environ['HOME'] = temp_dir
                 files = dist.find_config_files()

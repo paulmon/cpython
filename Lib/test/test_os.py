@@ -181,7 +181,7 @@ class FileTests(unittest.TestCase):
             shell=True)
         self.assertEqual(retcode, 0)
 
-    @unittest.skipUnless(sys.platform.startswith('win'),
+    @unittest.skipUnless(sys.platform == 'win32',
                          'test specific to the Windows console')
     def test_write_windows_console(self):
         # Issue #11395: the Windows console returns an error (12: not enough
@@ -382,7 +382,7 @@ class StatAttributeTests(unittest.TestCase):
             unpickled = pickle.loads(p)
             self.assertEqual(result, unpickled)
 
-    @unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific tests")
+    @unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
     def test_1686475(self):
         # Verify that an open file can be stat'ed
         try:
@@ -392,7 +392,7 @@ class StatAttributeTests(unittest.TestCase):
         except OSError as e:
             self.fail("Could not stat pagefile.sys")
 
-    @unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific tests")
+    @unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
     @unittest.skipUnless(hasattr(os, "pipe"), "requires os.pipe()")
     def test_15261(self):
         # Verify that stat'ing a closed fd does not cause crash
@@ -411,7 +411,7 @@ class StatAttributeTests(unittest.TestCase):
         self.assertTrue(isinstance(result.st_file_attributes, int))
         self.assertTrue(0 <= result.st_file_attributes <= 0xFFFFFFFF)
 
-    @unittest.skipUnless(sys.platform.startswith("win"),
+    @unittest.skipUnless(sys.platform == "win32",
                          "st_file_attributes is Win32 specific")
     def test_file_attributes(self):
         # test file st_file_attributes (FILE_ATTRIBUTE_DIRECTORY not set)
@@ -432,7 +432,7 @@ class StatAttributeTests(unittest.TestCase):
             result.st_file_attributes & stat.FILE_ATTRIBUTE_DIRECTORY,
             stat.FILE_ATTRIBUTE_DIRECTORY)
 
-    @unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific tests")
+    @unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
     def test_access_denied(self):
         # Default to FindFirstFile WIN32_FIND_DATA when access is
         # denied. See issue 28075.
@@ -609,7 +609,7 @@ class UtimeTests(unittest.TestCase):
         self._test_utime_current(set_time)
 
     def get_file_system(self, path):
-        if sys.platform.startswith('win'):
+        if sys.platform == 'win32':
             root = os.path.splitdrive(os.path.abspath(path))[0] + '\\'
             import ctypes
             kernel32 = ctypes.windll.kernel32
@@ -771,7 +771,7 @@ class EnvironTests(mapping_tests.BasicTestMappingProtocol):
     # On OS X < 10.6, unsetenv() doesn't return a value (bpo-13415).
     @support.requires_mac_ver(10, 6)
     def test_unset_error(self):
-        if sys.platform.startswith("win"):
+        if sys.platform == "win32":
             # an environment variable is limited to 32,767 characters
             key = 'x' * 50000
             self.assertRaises(ValueError, os.environ.__delitem__, key)
@@ -1575,7 +1575,7 @@ class ExecTests(unittest.TestCase):
             os.execve(args[0], args, newenv)
 
 
-@unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific tests")
+@unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
 class Win32ErrorTests(unittest.TestCase):
     def setUp(self):
         try:
@@ -1748,7 +1748,7 @@ class LinkTests(unittest.TestCase):
         self.file2 = self.file1 + "2"
         self._test_link(self.file1, self.file2)
 
-@unittest.skipIf(sys.platform.startswith("win"), "Posix specific tests")
+@unittest.skipIf(sys.platform == "win32", "Posix specific tests")
 class PosixUidGidTests(unittest.TestCase):
     @unittest.skipUnless(hasattr(os, 'setuid'), 'test needs os.setuid()')
     def test_setuid(self):
@@ -1804,7 +1804,7 @@ class PosixUidGidTests(unittest.TestCase):
                 sys.executable, '-c',
                 'import os,sys;os.setregid(-1,-1);sys.exit(0)'])
 
-@unittest.skipIf(sys.platform.startswith("win"), "Posix specific tests")
+@unittest.skipIf(sys.platform == "win32", "Posix specific tests")
 class Pep383Tests(unittest.TestCase):
     def setUp(self):
         if support.TESTFN_UNENCODABLE:
@@ -1876,7 +1876,7 @@ class Pep383Tests(unittest.TestCase):
         for fn in self.unicodefn:
             os.stat(os.path.join(self.dir, fn))
 
-@unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific tests")
+@unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
 class Win32KillTests(unittest.TestCase):
     def _kill(self, sig):
         # Start sys.executable as a subprocess and communicate from the
@@ -1992,7 +1992,7 @@ class Win32KillTests(unittest.TestCase):
         self._kill_with_event(signal.CTRL_BREAK_EVENT, "CTRL_BREAK_EVENT")
 
 
-@unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific tests")
+@unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
 class Win32ListdirTests(unittest.TestCase):
     """Test listdir on Windows."""
 
@@ -2040,7 +2040,7 @@ class Win32ListdirTests(unittest.TestCase):
                 [os.fsencode(path) for path in self.created_paths])
 
 
-@unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific tests")
+@unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
 @support.skip_unless_symlink
 class Win32SymlinkTests(unittest.TestCase):
     filelink = 'filelinktest'
@@ -2200,7 +2200,7 @@ class Win32SymlinkTests(unittest.TestCase):
                 except OSError:
                     pass
 
-@unittest.skipUnless(sys.platform.startswith("win"), "Win32 specific tests")
+@unittest.skipUnless(sys.platform == "win32", "Win32 specific tests")
 class Win32JunctionTests(unittest.TestCase):
     junction = 'junctiontest'
     junction_target = os.path.dirname(os.path.abspath(__file__))
@@ -2930,7 +2930,7 @@ class TermsizeTests(unittest.TestCase):
         try:
             size = os.get_terminal_size()
         except OSError as e:
-            if sys.platform.startswith("win") or e.errno in (errno.EINVAL, errno.ENOTTY):
+            if sys.platform == "win32" or e.errno in (errno.EINVAL, errno.ENOTTY):
                 # Under win32 a generic OSError can be thrown if the
                 # handle cannot be retrieved
                 self.skipTest("failed to query terminal size")
@@ -2956,7 +2956,7 @@ class TermsizeTests(unittest.TestCase):
         try:
             actual = os.get_terminal_size(sys.__stdin__.fileno())
         except OSError as e:
-            if sys.platform.startswith("win") or e.errno in (errno.EINVAL, errno.ENOTTY):
+            if sys.platform == "win32" or e.errno in (errno.EINVAL, errno.ENOTTY):
                 # Under win32 a generic OSError can be thrown if the
                 # handle cannot be retrieved
                 self.skipTest("failed to query terminal size")
@@ -2997,7 +2997,7 @@ class OSErrorTests(unittest.TestCase):
             (self.filenames, os.stat,),
             (self.filenames, os.unlink,),
         ]
-        if sys.platform.startswith("win"):
+        if sys.platform == "win32":
             funcs.extend((
                 (self.bytes_filenames, os.rename, b"dst"),
                 (self.bytes_filenames, os.replace, b"dst"),
@@ -3024,7 +3024,7 @@ class OSErrorTests(unittest.TestCase):
         if hasattr(os, "chroot"):
             funcs.append((self.filenames, os.chroot,))
         if hasattr(os, "link"):
-            if sys.platform.startswith("win"):
+            if sys.platform == "win32":
                 funcs.append((self.bytes_filenames, os.link, b"dst"))
                 funcs.append((self.unicode_filenames, os.link, "dst"))
             else:
@@ -3039,7 +3039,7 @@ class OSErrorTests(unittest.TestCase):
         if hasattr(os, "lchmod"):
             funcs.append((self.filenames, os.lchmod, 0o777))
         if hasattr(os, "readlink"):
-            if sys.platform.startswith("win"):
+            if sys.platform == "win32":
                 funcs.append((self.unicode_filenames, os.readlink,))
             else:
                 funcs.append((self.filenames, os.readlink,))

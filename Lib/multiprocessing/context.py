@@ -144,7 +144,7 @@ class BaseContext(object):
         '''Check whether this is a fake forked process in a frozen executable.
         If so then run code specified by commandline and exit.
         '''
-        if sys.platform.startswith('win') and getattr(sys, 'frozen', False):
+        if sys.platform == 'win32' and getattr(sys, 'frozen', False):
             from .spawn import freeze_support
             freeze_support()
 
@@ -253,7 +253,7 @@ class DefaultContext(BaseContext):
         return self._actual_context._name
 
     def get_all_start_methods(self):
-        if sys.platform.startswith('win'):
+        if sys.platform == 'win32':
             return ['spawn']
         else:
             if reduction.HAVE_SEND_HANDLE:
@@ -267,7 +267,7 @@ DefaultContext.__all__ = [x for x in dir(DefaultContext) if x[0] != '_']
 # Context types for fixed start method
 #
 
-if not sys.platform.startswith('win'):
+if sys.platform != 'win32':
 
     class ForkProcess(process.BaseProcess):
         _start_method = 'fork'

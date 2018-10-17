@@ -29,10 +29,10 @@ class GenericTests(unittest.TestCase):
                 self.assertIsInstance(sig, signal.Signals)
             elif name.startswith('CTRL_'):
                 self.assertIsInstance(sig, signal.Signals)
-                self.assertEqual(sys.platform[:3], "win")
+                self.assertEqual(sys.platform, "win32")
 
 
-@unittest.skipIf(sys.platform.startswith("win"), "Not valid on Windows")
+@unittest.skipIf(sys.platform == "win32", "Not valid on Windows")
 class PosixTests(unittest.TestCase):
     def trivial_signal_handler(self, *args):
         pass
@@ -62,7 +62,7 @@ class PosixTests(unittest.TestCase):
         assert_python_ok(script)
 
 
-@unittest.skipUnless(sys.platform.startswith("win"), "Windows specific")
+@unittest.skipUnless(sys.platform == "win32", "Windows specific")
 class WindowsSignalTests(unittest.TestCase):
     def test_issue9324(self):
         # Updated for issue #10003, adding SIGBREAK
@@ -144,7 +144,7 @@ class WakeupFDTests(unittest.TestCase):
 
     # On Windows, files are always blocking and Windows does not provide a
     # function to test if a socket is in non-blocking mode.
-    @unittest.skipIf(sys.platform.startswith("win"), "tests specific to POSIX")
+    @unittest.skipIf(sys.platform == "win32", "tests specific to POSIX")
     def test_set_wakeup_fd_blocking(self):
         rfd, wfd = os.pipe()
         self.addCleanup(os.close, rfd)
@@ -163,7 +163,7 @@ class WakeupFDTests(unittest.TestCase):
         signal.set_wakeup_fd(-1)
 
 
-@unittest.skipIf(sys.platform.startswith("win"), "Not valid on Windows")
+@unittest.skipIf(sys.platform == "win32", "Not valid on Windows")
 class WakeupSignalTests(unittest.TestCase):
     @unittest.skipIf(_testcapi is None, 'need _testcapi')
     def check_wakeup(self, test_body, *signals, ordered=True):
@@ -456,7 +456,7 @@ class WakeupSocketSignalTests(unittest.TestCase):
         read, write = socket.socketpair()
 
         # Fill the socketpair buffer
-        if sys.platform.startswith('win'):
+        if sys.platform == 'win32':
             # bpo-34130: On Windows, sometimes non-blocking send fails to fill
             # the full socketpair buffer, so use a timeout of 50 ms instead.
             write.settimeout(0.050)
@@ -538,7 +538,7 @@ class WakeupSocketSignalTests(unittest.TestCase):
         assert_python_ok('-c', code)
 
 
-@unittest.skipIf(sys.platform.startswith("win"), "Not valid on Windows")
+@unittest.skipIf(sys.platform == "win32", "Not valid on Windows")
 class SiginterruptTest(unittest.TestCase):
 
     def readpipe_interrupted(self, interrupt):
@@ -623,7 +623,7 @@ class SiginterruptTest(unittest.TestCase):
         self.assertFalse(interrupted)
 
 
-@unittest.skipIf(sys.platform.startswith("win"), "Not valid on Windows")
+@unittest.skipIf(sys.platform == "win32", "Not valid on Windows")
 class ItimerTest(unittest.TestCase):
     def setUp(self):
         self.hndl_called = False

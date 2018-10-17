@@ -699,7 +699,7 @@ class StreamTests(test_utils.TestCase):
             server.stop()
             self.assertEqual(msg, b"hello world!\n")
 
-    @unittest.skipIf(sys.platform.startswith('win'), "Don't have pipes")
+    @unittest.skipIf(sys.platform == 'win32', "Don't have pipes")
     def test_read_all_from_pipe_reader(self):
         # See asyncio issue 168.  This test is derived from the example
         # subprocess_attach_read_pipe.py, but we configure the

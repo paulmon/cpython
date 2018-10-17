@@ -386,7 +386,7 @@ class SimpleHTTPServerTestCase(BaseTestCase):
 
     @unittest.skipIf(sys.platform == 'darwin',
                      'undecodable name cannot always be decoded on macOS')
-    @unittest.skipIf(sys.platform.startswith('win'),
+    @unittest.skipIf(sys.platform == 'win32',
                      'undecodable name cannot be decoded on win32')
     @unittest.skipUnless(support.TESTFN_UNDECODABLE,
                          'need support.TESTFN_UNDECODABLE')

@@ -152,7 +152,7 @@ class CmdLineTest(unittest.TestCase):
     # command line, but how subprocess does decode bytes to unicode. Python
     # doesn't decode the command line because Windows provides directly the
     # arguments as unicode (using wmain() instead of main()).
-    @unittest.skipIf(sys.platform.startswith('win'),
+    @unittest.skipIf(sys.platform == 'win32',
                      'Windows has a native unicode API')
     def test_undecodable_code(self):
         undecodable = b"\xff"
@@ -331,7 +331,7 @@ class CmdLineTest(unittest.TestCase):
             print(4, file=sys.stderr)"""
         rc, out, err = assert_python_ok('-c', code)
 
-        if sys.platform.startswith('win'):
+        if sys.platform == 'win32':
             self.assertEqual(b'1\r\n2\r\n', out)
             self.assertEqual(b'3\r\n4', err)
         else:
@@ -699,7 +699,7 @@ class CmdLineTest(unittest.TestCase):
         self.assertEqual(proc.stdout.rstrip(), 'True')
         self.assertEqual(proc.returncode, 0, proc)
 
-    @unittest.skipUnless(sys.platform.startswith('win'),
+    @unittest.skipUnless(sys.platform == 'win32',
                          'bpo-32457 only applies on Windows')
     def test_argv0_normalization(self):
         args = sys.executable, '-c', 'print(0)'

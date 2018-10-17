@@ -14,11 +14,10 @@ class PlatformTest(unittest.TestCase):
         res = platform.architecture()
 
     @support.skip_unless_symlink
-    @unittest.skipIf(platform.win32_is_iot(), "symbolic links don't work on Windows IoT Core or nanoserver")
     def test_architecture_via_symlink(self): # issue3762
         # On Windows, the EXE needs to know where pythonXY.dll and *.pyd is at
         # so we add the directory to the path and PYTHONPATH.
-        if sys.platform.startswith("win"):
+        if sys.platform == "win32":
             def restore_environ(old_env):
                 os.environ.clear()
                 os.environ.update(old_env)
@@ -304,7 +303,7 @@ class PlatformTest(unittest.TestCase):
             self.assertEqual(platform._parse_release_file(input), output)
 
     def test_popen(self):
-        mswindows = (sys.platform.startswith("win"))
+        mswindows = (sys.platform == "win32")
 
         if mswindows:
             command = '"{}" -c "print(\'Hello\')"'.format(sys.executable)

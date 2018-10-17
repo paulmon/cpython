@@ -110,7 +110,7 @@ class bdist_wininst(Command):
                       % self.install_script)
 
     def run(self):
-        if (not sys.platform.startswith("win") and
+        if (sys.platform != "win32" and
             (self.distribution.has_ext_modules() or
              self.distribution.has_c_libraries())):
             raise DistutilsPlatformError \

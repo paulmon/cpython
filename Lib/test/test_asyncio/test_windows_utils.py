@@ -4,7 +4,7 @@ import sys
 import unittest
 import warnings
 
-if not sys.platform.startswith('win'):
+if sys.platform != 'win32':
     raise unittest.SkipTest('Windows only')
 
 import _overlapped
