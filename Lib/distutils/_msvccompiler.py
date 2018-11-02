@@ -23,7 +23,7 @@ from distutils.errors import DistutilsExecError, DistutilsPlatformError, \
                              CompileError, LibError, LinkError
 from distutils.ccompiler import CCompiler, gen_lib_options
 from distutils import log
-from distutils.util import get_platform
+from distutils.util import get_target_platform
 
 from itertools import count
 
@@ -88,13 +88,23 @@ def _find_vc2017():
         best_version = None
     return best_version, best_dir
 
+PLAT_SPEC_TO_RUNTIME = {
+    'x86' : 'x86',
+    'x86_amd64' : 'x64',
+    'x86_arm' : 'arm',
+}
+
 def _find_vcvarsall(plat_spec):
     best_version, best_dir = _find_vc2017()
     vcruntime = None
-    vcruntime_plat = 'x64' if 'amd64' in plat_spec else 'x86'
+    if plat_spec in PLAT_SPEC_TO_RUNTIME:
+        vcruntime_plat = PLAT_SPEC_TO_RUNTIME[plat_spec]
+    else:
+        vcruntime_plat = 'x64' if 'amd64' in plat_spec else 'x86'
+
     if best_version:
         vcredist = os.path.join(best_dir, "..", "..", "redist", "MSVC", "**",
-            "Microsoft.VC141.CRT", "vcruntime140.dll")
+            vcruntime_plat, "Microsoft.VC141.CRT", "vcruntime140.dll")
         try:
             import glob
             vcruntime = glob.glob(vcredist, recursive=True)[-1]
@@ -171,7 +181,7 @@ def _find_exe(exe, paths=None):
             return fn
     return exe
 
-# A map keyed by get_platform() return values to values accepted by
+# A map keyed by get_target_platform() return values to values accepted by
 # 'vcvarsall.bat'. Always cross-compile from x86 to work with the
 # lighter-weight MSVC installs that do not include native 64-bit tools.
 PLAT_TO_VCVARS = {
@@ -227,7 +237,8 @@ class MSVCCompiler(CCompiler) :
         # multi-init means we would need to check platform same each time...
         assert not self.initialized, "don't init multiple times"
         if plat_name is None:
-            plat_name = get_platform()
+            plat_name = get_target_platform()
+
         # sanity check for platforms to prevent obscure errors later.
         if plat_name not in PLAT_TO_VCVARS:
             raise DistutilsPlatformError("--plat-name must be one of {}"

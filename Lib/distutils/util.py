@@ -94,6 +94,23 @@ def get_platform ():
 
 # get_platform ()
 
+def get_target_platform ():
+    TARGET_TO_PLAT = {
+        'x86' : 'win32',
+        'x64' : 'win-amd64',
+        'arm' : 'win-arm',
+    }
+
+    targetPlatformFromEnvironment = os.environ.get('VSCMD_ARG_TGT_ARCH')
+
+    if targetPlatformFromEnvironment != None and targetPlatformFromEnvironment in TARGET_TO_PLAT:
+        targetPlatform = TARGET_TO_PLAT[targetPlatformFromEnvironment]
+    else:
+        targetPlatform = get_platform()
+
+    return targetPlatform
+
+# get_target_platform ()
 
 def convert_path (pathname):
     """Return 'pathname' as a name that will work on the native filesystem,

@@ -22,7 +22,7 @@ from distutils.errors import DistutilsExecError, DistutilsPlatformError, \
 from distutils.ccompiler import CCompiler, gen_preprocess_options, \
                                 gen_lib_options
 from distutils import log
-from distutils.util import get_platform
+from distutils.util import get_platform, get_target_platform
 
 import winreg
 
@@ -49,7 +49,7 @@ else:
     WINSDK_BASE = r"Software\Microsoft\Microsoft SDKs\Windows"
     NET_BASE = r"Software\Microsoft\.NETFramework"
 
-# A map keyed by get_platform() return values to values accepted by
+# A map keyed by get_target_platform() return values to values accepted by
 # 'vcvarsall.bat'.  Note a cross-compile may combine these (eg, 'x86_amd64' is
 # the param to cross-compile on x86 targeting amd64.)
 PLAT_TO_VCVARS = {
@@ -341,7 +341,7 @@ class MSVCCompiler(CCompiler) :
         # multi-init means we would need to check platform same each time...
         assert not self.initialized, "don't init multiple times"
         if plat_name is None:
-            plat_name = get_platform()
+            plat_name = get_target_platform()
         # sanity check for platforms to prevent obscure errors later.
         ok_plats = 'win32', 'win-amd64'
         if plat_name not in ok_plats:

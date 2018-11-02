@@ -6,7 +6,7 @@ $exec_prefix)."""
 
 import os
 from distutils.core import Command
-from distutils.util import get_platform
+from distutils.util import get_target_platform
 from distutils.dir_util import remove_tree, ensure_relative
 from distutils.errors import *
 from distutils.sysconfig import get_python_version
@@ -20,7 +20,7 @@ class bdist_dumb(Command):
                      "temporary directory for creating the distribution"),
                     ('plat-name=', 'p',
                      "platform name to embed in generated filenames "
-                     "(default: %s)" % get_platform()),
+                     "(default: %s)" % get_target_platform()),
                     ('format=', 'f',
                      "archive format to create (tar, gztar, bztar, xztar, "
                      "ztar, zip)"),
