@@ -679,14 +679,9 @@ class build_ext(Command):
         from distutils.sysconfig import get_config_var
         ext_path = ext_name.split('.')
 
-        # TODO: make this less hard-coded
         if os.name == 'nt' and self.plat_name != get_platform():
-            if self.plat_name == 'win-arm':
-                ext_suffix = '.cp37-win_arm.pyd'
-            elif self.plat_name == 'win-amd64':
-                ext_suffix = '.cp37-win_amd64.pyd'
-            elif self.plat_name == 'win32':
-                ext_suffix = '.cp37-win32.pyd'
+            plat_tag = self.plat_name.replace('-', '_')
+            ext_suffix = '.cp{0.major}{0.minor}-{1}.pyd'.format(sys.version_info, plat_tag)
         else:
             ext_suffix = get_config_var('EXT_SUFFIX')
 
