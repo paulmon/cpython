@@ -14,7 +14,7 @@ from distutils.sysconfig import customize_compiler, get_python_version
 from distutils.sysconfig import get_config_h_filename
 from distutils.dep_util import newer_group
 from distutils.extension import Extension
-from distutils.util import get_platform
+from distutils.util import get_platform, get_target_platform
 from distutils import log
 
 from site import USER_BASE
@@ -60,7 +60,7 @@ class build_ext(Command):
          "directory for temporary files (build by-products)"),
         ('plat-name=', 'p',
          "platform name to cross-compile for, if supported "
-         "(default: %s)" % get_platform()),
+         "(default: %s)" % get_target_platform()),
         ('inplace', 'i',
          "ignore build-lib and put compiled extensions into the source " +
          "directory alongside your pure Python modules"),
@@ -678,7 +678,8 @@ class build_ext(Command):
         """
         from distutils.sysconfig import get_config_var
         ext_path = ext_name.split('.')
-        
+
+        # TODO: make this less hard-coded
         if os.name == 'nt' and self.plat_name != get_platform():
             if self.plat_name == 'win-arm':
                 ext_suffix = '.cp37-win_arm.pyd'

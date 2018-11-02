@@ -5,7 +5,7 @@ Implements the Distutils 'build' command."""
 import sys, os
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
-from distutils.util import get_platform
+from distutils.util import get_target_platform
 
 
 def show_compilers():
@@ -33,7 +33,7 @@ class build(Command):
          "temporary build directory"),
         ('plat-name=', 'p',
          "platform name to build for, if supported "
-         "(default: %s)" % get_platform()),
+         "(default: %s)" % get_target_platform()),
         ('compiler=', 'c',
          "specify the compiler type"),
         ('parallel=', 'j',
@@ -71,7 +71,7 @@ class build(Command):
 
     def finalize_options(self):
         if self.plat_name is None:
-            self.plat_name = get_platform()
+            self.plat_name = get_target_platform()
         else:
             # plat-name only supported for windows (other platforms are
             # supported via ./configure flags, if at all).  Avoid misleading
