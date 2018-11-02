@@ -678,12 +678,7 @@ class build_ext(Command):
         """
         from distutils.sysconfig import get_config_var
         ext_path = ext_name.split('.')
-
-        if os.name == 'nt' and self.plat_name != get_platform():
-            plat_tag = self.plat_name.replace('-', '_')
-            ext_suffix = '.cp{0.major}{0.minor}-{1}.pyd'.format(sys.version_info, plat_tag)
-        else:
-            ext_suffix = get_config_var('EXT_SUFFIX')
+        ext_suffix = get_config_var('EXT_SUFFIX')
 
         return os.path.join(*ext_path) + ext_suffix
 
