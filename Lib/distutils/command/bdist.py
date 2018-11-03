@@ -6,7 +6,7 @@ distribution)."""
 import os
 from distutils.core import Command
 from distutils.errors import *
-from distutils.util import get_platform
+from distutils.util import get_target_platform
 
 
 def show_formats():
@@ -29,7 +29,7 @@ class bdist(Command):
                      "temporary directory for creating built distributions"),
                     ('plat-name=', 'p',
                      "platform name to embed in generated filenames "
-                     "(default: %s)" % get_platform()),
+                     "(default: %s)" % get_target_platform()),
                     ('formats=', None,
                      "formats for distribution (comma-separated list)"),
                     ('dist-dir=', 'd',
@@ -91,7 +91,7 @@ class bdist(Command):
         # have to finalize 'plat_name' before 'bdist_base'
         if self.plat_name is None:
             if self.skip_build:
-                self.plat_name = get_platform()
+                self.plat_name = get_target_platform()
             else:
                 self.plat_name = self.get_finalized_command('build').plat_name
 
