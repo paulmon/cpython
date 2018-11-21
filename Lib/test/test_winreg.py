@@ -399,7 +399,7 @@ class Win64WinregTests(BaseWinregTests):
         DeleteKeyEx(key=HKEY_CURRENT_USER, sub_key=test_key_name,
                     access=KEY_ALL_ACCESS, reserved=0)
 
-    @unittest.skipIf(win32_editionId() == 'WindowsCoreHeadless' or win32_editionId() == 'IoTEdgeOS', "APIs not available on WindowsCoreHeadless")
+    @unittest.skipIf(win32_editionId() in ('WindowsCoreHeadless', 'IoTEdgeOS'), "APIs not available on WindowsCoreHeadless")
     def test_reflection_functions(self):
         # Test that we can call the query, enable, and disable functions
         # on a key which isn't on the reflection list with no consequences.
