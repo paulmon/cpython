@@ -15,7 +15,6 @@ import locale
 import mmap
 import os
 import pickle
-import platform
 import shutil
 import signal
 import socket
@@ -29,6 +28,7 @@ import unittest
 import uuid
 import warnings
 from test import support
+from platform import win32_is_iot
 
 try:
     import resource
@@ -2285,7 +2285,7 @@ class DeviceEncodingTests(unittest.TestCase):
         # Return None when an fd doesn't actually exist.
         self.assertIsNone(os.device_encoding(123456))
 
-    @unittest.skipUnless(os.isatty(0) and not platform.win32_editionId() == 'NanoServer' and (sys.platform.startswith('win') or
+    @unittest.skipUnless(os.isatty(0) and not win32_is_iot() and (sys.platform.startswith('win') or
             (hasattr(locale, 'nl_langinfo') and hasattr(locale, 'CODESET'))),
             'test requires a tty and either Windows or nl_langinfo(CODESET)')
     def test_device_encoding(self):
