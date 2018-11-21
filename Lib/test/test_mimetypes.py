@@ -118,7 +118,7 @@ class Win32MimeTypesTestCase(unittest.TestCase):
         mimetypes.types_map.clear()
         mimetypes.types_map.update(self.original_types_map)
 
-    @unittest.skipIf(win32_editionId() == 'NanoServer' or win32_editionId() == 'WindowsCoreHeadless' or win32_editionId() == 'IoTEdgeOS', "mime types registry keys not available on NanoServer")
+    @unittest.skipIf(win32_editionId() in ('NanoServer', 'WindowsCoreHeadless', 'IoTEdgeOS'), "mime types registry keys not available on NanoServer")
     def test_registry_parsing(self):
         # the original, minimum contents of the MIME database in the
         # Windows registry is undocumented AFAIK.

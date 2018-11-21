@@ -335,7 +335,7 @@ _WIN32_SERVER_RELEASES = {
 }
 
 def win32_is_iot(isIot=False):
-    if win32_editionId() == 'IoTUAP' or win32_editionId() == 'NanoServer' or win32_editionId() == 'WindowsCoreHeadless' or win32_editionId() == 'IoTEdgeOS':
+    if win32_editionId() in ('IoTUAP', 'NanoServer', 'WindowsCoreHeadless', 'IoTEdgeOS'):
         return True
     return False
 
