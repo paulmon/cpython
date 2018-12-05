@@ -243,13 +243,13 @@ def main():
     print ('source = {}'.format(source))
     print ('output = {}'.format(output)) 
 
-    if ns.clean:
+    if ns.clean and output.is_dir():
         print ('clean output directory')
         shutil.rmtree(output)
 
     if not output.is_dir():
         print ('create output directory')
-        os.mkdir(output)
+        os.makedirs(output)
 
     assert isinstance(repo, Path)
     assert isinstance(source, Path)
