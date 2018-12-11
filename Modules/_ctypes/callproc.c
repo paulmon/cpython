@@ -741,7 +741,7 @@ ffi_type *_ctypes_get_ffi_type(PyObject *obj)
     dict = PyType_stgdict(obj);
     if (dict == NULL)
         return &ffi_type_sint;
-#if defined(MS_WIN32) && !defined(_WIN32_WCE)
+#if defined(MS_WIN32) && !defined(_WIN32_WCE) && !defined (_M_ARM)
     /* This little trick works correctly with MSVC.
        It returns small structures in registers
     */

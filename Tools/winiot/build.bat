@@ -2,7 +2,7 @@
 setlocal
 set D=%~dp0
 set PCBUILD=%D%..\..\PCbuild\
-set PYTHON_EXE=%PCBUILD%..\externals\pythonx86\tools\python.exe
+set PYTHON_EXE=python.exe
 if "%Py_OutDir%"=="" set Py_OutDir=%PCBUILD%
 
 set BUILDX86=

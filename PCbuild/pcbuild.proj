@@ -49,7 +49,7 @@
     <!-- pyshellext.dll -->
     <Projects Include="pyshellext.vcxproj" />
     <!-- Extension modules -->
-    <ExtensionModules Include="_asyncio;_contextvars;_ctypes;_decimal;_distutils_findvs;_elementtree;_msi;_multiprocessing;_overlapped;pyexpat;_queue;select;unicodedata;winsound" />
+    <ExtensionModules Include="_asyncio;_contextvars;_ctypes;_decimal;_elementtree;_msi;_multiprocessing;_overlapped;pyexpat;_queue;select;unicodedata;winsound" />
     <!-- Extension modules that require external sources -->
     <ExternalModules Include="_bz2;_lzma;_sqlite3" />
     <!-- _ssl will build _socket as well, which may cause conflicts in parallel builds -->
@@ -71,7 +71,7 @@
     <!-- python[w].exe -->
     <Projects2 Include="python.vcxproj;pythonw.vcxproj" />
     <!-- venv[w]launcher.exe -->
-    <Projects2 Include="venvlauncher.vcxproj;venvwlauncher.vcxproj" />
+    <Projects2 Condition="$(Platform) != 'ARM'" Include="venvlauncher.vcxproj;venvwlauncher.vcxproj" />
   </ItemGroup>
 
   <Target Name="Build">
