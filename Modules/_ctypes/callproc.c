@@ -781,7 +781,7 @@ static int _call_function_pointer(int flags,
     int *space;
     ffi_cif cif;
     int cc;
-#ifdef MS_WIN32
+#if defined(MS_WIN32) && !defined(_M_ARM)
     int delta;
 #ifndef DONT_USE_SEH
     DWORD dwExceptionCode = 0;
@@ -831,11 +831,9 @@ static int _call_function_pointer(int flags,
 #ifndef DONT_USE_SEH
     __try {
 #endif
-#ifdef _M_ARM
-        delta = 0;
-#else
+#ifndef _M_ARM
         delta =
-#endif // _M_ARM
+#endif
 #endif
                 ffi_call(&cif, (void *)pProc, resmem, avalues);
 #ifdef MS_WIN32
@@ -875,6 +873,7 @@ static int _call_function_pointer(int flags,
         return -1;
     }
 #else
+#ifndef _M_ARM
     if (delta < 0) {
         if (flags & FUNCFLAG_CDECL)
             PyErr_Format(PyExc_ValueError,
@@ -895,6 +894,7 @@ static int _call_function_pointer(int flags,
                  delta);
         return -1;
     }
+#endif
 #endif
 #endif
     if ((flags & FUNCFLAG_PYTHONAPI) && PyErr_Occurred())

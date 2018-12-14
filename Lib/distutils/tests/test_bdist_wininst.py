@@ -8,7 +8,6 @@ from distutils.tests import support
 
 @unittest.skipIf(getattr(bdist_wininst, '_unsupported', False),
     'bdist_wininst is not supported in this install')
-@unittest.skipIf(platform.win32_is_iot(), "These tests don't work on Windows IoT Core or nanoserver")
 class BuildWinInstTestCase(support.TempdirManager,
                            support.LoggingSilencer,
                            unittest.TestCase):

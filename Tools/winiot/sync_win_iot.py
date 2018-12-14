@@ -122,7 +122,7 @@ def include_in_tools(p):
 
     return p.suffix.lower() in {'.py', '.pyw', '.txt'}
 
-BASE_NAME = 'python{0.major}{0.minor}'.format(sys.version_info)
+BASE_NAME = 'python??'
 
 FULL_LAYOUT = [
     ('/', '$source', 'python.exe', is_not_debug),
