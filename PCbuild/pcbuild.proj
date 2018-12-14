@@ -67,11 +67,11 @@
     </Projects>
     
     <!-- _freeze_importlib -->
-    <Projects2 Include="_freeze_importlib.vcxproj" />
+    <Projects2 Condition="$(Platform) != 'ARM'" Include="_freeze_importlib.vcxproj" />
     <!-- python[w].exe -->
     <Projects2 Include="python.vcxproj;pythonw.vcxproj" />
     <!-- venv[w]launcher.exe -->
-    <Projects2 Include="venvlauncher.vcxproj;venvwlauncher.vcxproj" />
+    <Projects2 Condition="$(Platform) != 'ARM'" Include="venvlauncher.vcxproj;venvwlauncher.vcxproj" />
   </ItemGroup>
 
   <Target Name="Build">

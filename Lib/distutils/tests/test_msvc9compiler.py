@@ -1,4 +1,5 @@
 """Tests for distutils.msvc9compiler."""
+import platform
 import sys
 import unittest
 import os
@@ -90,14 +91,14 @@ _CLEANED_MANIFEST = """\
   </dependency>
 </assembly>"""
 
-if sys.platform=="win32":
+if sys.platform=="win32" and not platform.win32_is_iot():
     from distutils.msvccompiler import get_build_version
     if get_build_version()>=8.0:
         SKIP_MESSAGE = None
     else:
         SKIP_MESSAGE = "These tests are only for MSVC8.0 or above"
 else:
-    SKIP_MESSAGE = "These tests are only for win32"
+    SKIP_MESSAGE = "These tests are only for win32 and do not work Windows IoT Core or nanoserver"
 
 @unittest.skipUnless(SKIP_MESSAGE is None, SKIP_MESSAGE)
 class msvc9compilerTestCase(support.TempdirManager,

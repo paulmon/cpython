@@ -1630,6 +1630,14 @@ main_loop:
                 exc = POP(); /* exc */
                 /* fall through */
             case 0:
+#if defined(_M_ARM) && !defined(DEBUG)
+                // work around optimizer problem on windows arm32
+                if (oparg == 2)
+                {
+                    exc = stack_pointer[0];
+                    cause = stack_pointer[1];
+                }
+#endif
                 if (do_raise(exc, cause)) {
                     goto exception_unwind;
                 }

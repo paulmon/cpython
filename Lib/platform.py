@@ -334,6 +334,30 @@ _WIN32_SERVER_RELEASES = {
     (6, None): "post2012ServerR2",
 }
 
+def win32_is_iot(isIot=False):
+    if win32_editionId() in ('IoTUAP', 'NanoServer', 'WindowsCoreHeadless', 'IoTEdgeOS'):
+        return True
+    return False
+
+def win32_editionId(editionId=''):
+    try:
+        from winreg import OpenKeyEx, QueryValueEx, CloseKey, HKEY_LOCAL_MACHINE
+    except ImportError:
+        from _winreg import OpenKeyEx, QueryValueEx, CloseKey, HKEY_LOCAL_MACHINE
+
+    key = None
+    try:
+        key = OpenKeyEx(HKEY_LOCAL_MACHINE,
+                        r'SOFTWARE\Microsoft\Windows NT\CurrentVersion')
+        editionId = QueryValueEx(key, 'EditionId')[0]
+    except:
+        pass
+    finally:
+        if key:
+            CloseKey(key)
+
+    return editionId
+
 def win32_ver(release='', version='', csd='', ptype=''):
     try:
         from sys import getwindowsversion

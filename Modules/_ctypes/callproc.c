@@ -68,6 +68,9 @@
 #include <malloc.h>
 #endif
 
+#ifdef _M_ARM
+#include <fficonfig.h>
+#endif
 #include <ffi.h>
 #include "ctypes.h"
 #ifdef HAVE_ALLOCA_H
@@ -738,7 +741,7 @@ ffi_type *_ctypes_get_ffi_type(PyObject *obj)
     dict = PyType_stgdict(obj);
     if (dict == NULL)
         return &ffi_type_sint;
-#if defined(MS_WIN32) && !defined(_WIN32_WCE)
+#if defined(MS_WIN32) && !defined(_WIN32_WCE) && !defined (_M_ARM)
     /* This little trick works correctly with MSVC.
        It returns small structures in registers
     */
@@ -778,7 +781,7 @@ static int _call_function_pointer(int flags,
     int *space;
     ffi_cif cif;
     int cc;
-#ifdef MS_WIN32
+#if defined(MS_WIN32) && !defined(_M_ARM)
     int delta;
 #ifndef DONT_USE_SEH
     DWORD dwExceptionCode = 0;
@@ -793,7 +796,7 @@ static int _call_function_pointer(int flags,
     }
 
     cc = FFI_DEFAULT_ABI;
-#if defined(MS_WIN32) && !defined(MS_WIN64) && !defined(_WIN32_WCE)
+#if defined(MS_WIN32) && !defined(MS_WIN64) && !defined(_WIN32_WCE) && !defined(_M_ARM)
     if ((flags & FUNCFLAG_CDECL) == 0)
         cc = FFI_STDCALL;
 #endif
@@ -828,7 +831,9 @@ static int _call_function_pointer(int flags,
 #ifndef DONT_USE_SEH
     __try {
 #endif
+#ifndef _M_ARM
         delta =
+#endif
 #endif
                 ffi_call(&cif, (void *)pProc, resmem, avalues);
 #ifdef MS_WIN32
@@ -868,6 +873,7 @@ static int _call_function_pointer(int flags,
         return -1;
     }
 #else
+#ifndef _M_ARM
     if (delta < 0) {
         if (flags & FUNCFLAG_CDECL)
             PyErr_Format(PyExc_ValueError,
@@ -888,6 +894,7 @@ static int _call_function_pointer(int flags,
                  delta);
         return -1;
     }
+#endif
 #endif
 #endif
     if ((flags & FUNCFLAG_PYTHONAPI) && PyErr_Occurred())

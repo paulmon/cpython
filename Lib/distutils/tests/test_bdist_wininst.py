@@ -1,4 +1,5 @@
 """Tests for distutils.command.bdist_wininst."""
+import platform
 import unittest
 from test.support import run_unittest
 

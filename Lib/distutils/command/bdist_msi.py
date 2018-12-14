@@ -12,7 +12,7 @@ from distutils.dir_util import remove_tree
 from distutils.sysconfig import get_python_version
 from distutils.version import StrictVersion
 from distutils.errors import DistutilsOptionError
-from distutils.util import get_platform
+from distutils.util import get_target_platform
 from distutils import log
 import msilib
 from msilib import schema, sequence, text
@@ -88,7 +88,7 @@ class bdist_msi(Command):
                      "temporary directory for creating the distribution"),
                     ('plat-name=', 'p',
                      "platform name to embed in generated filenames "
-                     "(default: %s)" % get_platform()),
+                     "(default: %s)" % get_target_platform()),
                     ('keep-temp', 'k',
                      "keep the pseudo-installation tree around after " +
                      "creating the distribution archive"),

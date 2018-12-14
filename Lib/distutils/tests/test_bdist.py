@@ -1,5 +1,6 @@
 """Tests for distutils.command.bdist."""
 import os
+import platform
 import unittest
 from test.support import run_unittest
 
@@ -7,6 +8,7 @@ from distutils.command.bdist import bdist
 from distutils.tests import support
 
 
+@unittest.skipIf(platform.win32_is_iot(), "These tests don't work on Windows IoT Core or nanoserver")
 class BuildTestCase(support.TempdirManager,
                     unittest.TestCase):
 

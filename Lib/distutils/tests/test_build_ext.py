@@ -1,5 +1,6 @@
 import sys
 import os
+import platform
 from io import StringIO
 import textwrap
 
@@ -20,7 +21,7 @@ from test import support
 # Don't load the xx module more than once.
 ALREADY_TESTED = False
 
-
+@unittest.skipIf(platform.win32_is_iot(), "These tests don't work on Windows IoT Core or nanoserver")
 class BuildExtTestCase(TempdirManager,
                        LoggingSilencer,
                        unittest.TestCase):
