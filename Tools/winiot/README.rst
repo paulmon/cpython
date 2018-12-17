@@ -7,6 +7,7 @@ Prerequisites
 
 - `Microsoft Visual Studio 2017 <https://visualstudio.microsoft.com/downloads/>`_
 - `Git for Windows <https://git-scm.com/downloads>`_
+- Perl 5 (for OpenSSL Configure)
 
 Get the CPython on Windows ARM32 code
 ------------
@@ -24,22 +25,22 @@ Get OpenSSL for Windows ARM32
 To get the OpenSSL binaries for Windows ARM32 you will need to build them yourself::
 
     cd ..
-    git clone https://github.com/paulmon/openssl.git
+    git https://github.com/openssl/openssl.git
     cd openssl
-    git checkout win-arm32-patch
-    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsamd64_arm.bat"
+    git am < ..\cpython\tools\winiot\OpenSSL-for-Windows-ARM32.patch
+    "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsamd64_arm.bat"
     perl Configure VC-WIN32 no-asm --prefix=e:\openssl --openssldir=arm32
     nmake
     REM copy files directly to cpython externals
-    md ..\cpython\externals\openssl-bin-1.1.0h\arm32\include\openssl
-    copy LICENSE ..\cpython\externals\openssl-bin-1.1.0h\arm32
-    copy include\openssl\*.h ..\cpython\externals\openssl-bin-1.1.0h\arm32\include\openssl
-    copy ms\applink.c ..\cpython\externals\openssl-bin-1.1.0h\arm32\include
-    copy *.lib ..\cpython\externals\openssl-bin-1.1.0h\arm32
-    copy libcrypto-1_1.dll ..\cpython\externals\openssl-bin-1.1.0h\arm32
-    copy libcrypto-1_1.pdb ..\cpython\externals\openssl-bin-1.1.0h\arm32
-    copy libssl-1_1.dll ..\cpython\externals\openssl-bin-1.1.0h\arm32
-    copy libssl-1_1.pdb ..\cpython\externals\openssl-bin-1.1.0h\arm32
+    md ..\cpython\externals\openssl-bin-1.1.0i\arm32\include\openssl
+    copy LICENSE ..\cpython\externals\openssl-bin-1.1.0i\arm32
+    copy include\openssl\*.h ..\cpython\externals\openssl-bin-1.1.0i\arm32\include\openssl
+    copy ms\applink.c ..\cpython\externals\openssl-bin-1.1.0i\arm32\include
+    copy *.lib ..\cpython\externals\openssl-bin-1.1.0i\arm32
+    copy libcrypto-1_1.dll ..\cpython\externals\openssl-bin-1.1.0i\arm32
+    copy libcrypto-1_1.pdb ..\cpython\externals\openssl-bin-1.1.0i\arm32
+    copy libssl-1_1.dll ..\cpython\externals\openssl-bin-1.1.0i\arm32
+    copy libssl-1_1.pdb ..\cpython\externals\openssl-bin-1.1.0i\arm32
     cd ..\cpython
 
 Build CPython and stage files for xcopy install
@@ -51,7 +52,7 @@ To build a retail image::
 
 To build a debug image with test files::
 
-    Tools\winiot\build.bat -arm -r -c
+    Tools\winiot\build.bat -arm -r -c -d -t
 
 Copy debug files to Windows IoT Core device and run tests
 ---------------------------------------------------------
