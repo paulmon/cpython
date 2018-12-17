@@ -75,6 +75,9 @@ Connect via `ssh <https://docs.microsoft.com/en-us/windows/iot-core/connect-your
     REM Run tests
     python -m test -j3
 
+    REM Run ssl tests with network resources enabled
+    python_d -Werror -bb -m test -u urlfetch -u network -v test_ssl
+
 Copy release files to device
 ----------------------------
 
