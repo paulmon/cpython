@@ -127,6 +127,8 @@ BASE_NAME = 'python??'
 FULL_LAYOUT = [
     ('/', '$source', 'python.exe', is_not_debug),
     ('/', '$source', 'pythonw.exe', is_not_debug),
+    ('/', '$source', 'venvlauncher.exe', is_not_debug),
+    ('/', '$source', 'venvwlauncher.exe', is_not_debug),
     ('/', '$source', 'python{}.dll'.format(sys.version_info.major), is_not_debug),
     ('/', '$source', '{}.dll'.format(BASE_NAME), is_not_debug),
     ('DLLs/', '$source', '*.pyd', is_not_debug),
@@ -141,6 +143,8 @@ FULL_LAYOUT = [
 FULL_LAYOUT_DEBUG = [
     ('/', '$source', 'python_d.exe', is_debug),
     ('/', '$source', 'pythonw_d.exe', is_debug),
+    ('Lib/', '$source', 'venvlauncher_d.exe', is_debug),
+    ('Lib/', '$source', 'venvwlauncher_d.exe', is_debug),
     ('/', '$source', 'python{}_d.dll'.format(sys.version_info.major), is_debug),
     ('/', '$source', '{}_d.dll'.format(BASE_NAME), is_debug),
     ('include/', 'include', '*.h', None),
@@ -269,7 +273,33 @@ def main():
             fs = repo / s
         print('fs = {}'.format(fs))
         files = rglob(fs, p, c, includeDebug)
-        copied = copy_to_layout(output / t.rstrip('/'), files)
+        extra_files = []
+        if s == 'Lib' and p == '**/*':
+            extra_files.append((
+                repo / 'tools' / 'msi' / 'distutils.command.bdist_wininst.py',
+                Path('distutils') / 'command' / 'bdist_wininst.py'
+            ))
+        if p == 'venvlauncher.exe':
+            extra_files.append((
+                source / p,
+                Path('venv') / 'Scripts' / 'nt' / 'python.exe'
+            ))
+        if p == 'venvwlauncher.exe':
+            extra_files.append((
+                source / p,
+                Path('venv') / 'Scripts' / 'nt' / 'pythonw.exe'
+            ))
+        if p == 'venvlauncher_d.exe':
+            extra_files.append((
+                source / p,
+                Path('venv') / 'Scripts' / 'nt' / 'python_d.exe'
+            ))
+        if p == 'venvwlauncher_d.exe':
+            extra_files.append((
+                source / p,
+                Path('venv') / 'Scripts' / 'nt' / 'pythonw_d.exe'
+            ))
+        copied = copy_to_layout(output / t.rstrip('/'), chain(files, extra_files))
         print('Copied {} files'.format(copied))
 
     print("================================================================================")

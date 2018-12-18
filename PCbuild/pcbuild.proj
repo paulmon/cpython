@@ -9,6 +9,7 @@
     <IncludeTests Condition="'$(IncludeTest)' == ''">true</IncludeTests>
     <IncludeSSL Condition="'$(IncludeSSL)' == ''">true</IncludeSSL>
     <IncludeTkinter Condition="'$(IncludeTkinter)' == ''">true</IncludeTkinter>
+    <IncludeVenvLauncher Condition="'$(IncludeVenvLauncher)' == ''">true</IncludeVenvLauncher>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
@@ -71,7 +72,7 @@
     <!-- python[w].exe -->
     <Projects2 Include="python.vcxproj;pythonw.vcxproj" />
     <!-- venv[w]launcher.exe -->
-    <Projects2 Condition="$(Platform) != 'ARM'" Include="venvlauncher.vcxproj;venvwlauncher.vcxproj" />
+    <Projects2 Condition="$(IncludeVenvLauncher)" Include="venvlauncher.vcxproj;venvwlauncher.vcxproj" />
   </ItemGroup>
 
   <Target Name="Build">
