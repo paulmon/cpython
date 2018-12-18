@@ -25,14 +25,15 @@ Get OpenSSL for Windows ARM32
 Build OpenSSL binaries for Windows ARM32::
 
     cd ..
-    git https://github.com/openssl/openssl.git
+    git clone https://github.com/openssl/openssl.git
     cd openssl
+    git checkout -b win-arm32 OpenSSL_1_1_0i
 
-    REM the following command does not work in Powershell
-    git am < ..\cpython\tools\winiot\OpenSSL-for-Windows-ARM32.patch
+    REM apply patch required for successful ARM32 build
+    cmd /c "git am < ..\cpython\tools\winiot\OpenSSL-for-Windows-ARM32.patch"
 
     "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsamd64_arm.bat"
-    perl Configure VC-WIN32 no-asm --prefix=d:\openssl_output --openssldir=arm32
+    perl Configure VC-WIN32 no-asm
     nmake
 
     REM copy files directly to cpython externals
