@@ -781,8 +781,10 @@ static int _call_function_pointer(int flags,
     int *space;
     ffi_cif cif;
     int cc;
-#if defined(MS_WIN32) && !defined(_M_ARM)
+#ifdef MS_WIN32
+#if !defined(_M_ARM)
     int delta;
+#endif // _M _ARM
 #ifndef DONT_USE_SEH
     DWORD dwExceptionCode = 0;
     EXCEPTION_RECORD record;

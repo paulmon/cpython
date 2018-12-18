@@ -125,31 +125,35 @@ def include_in_tools(p):
 BASE_NAME = 'python??'
 
 FULL_LAYOUT = [
-    ('/', '$source', 'python.exe', is_not_debug),
-    ('/', '$source', 'pythonw.exe', is_not_debug),
-    ('/', '$source', 'python{}.dll'.format(sys.version_info.major), is_not_debug),
-    ('/', '$source', '{}.dll'.format(BASE_NAME), is_not_debug),
-    ('DLLs/', '$source', '*.pyd', is_not_debug),
-    ('DLLs/', '$source', '*.dll', is_not_python),
-    ('include/', 'include', '*.h', None),
-    ('include/', 'PC', 'pyconfig.h', None),
-    ('Lib/', 'Lib', '**/*', include_in_lib),
-    ('libs/', '$source', '*.lib', include_in_libs),
-    ('Tools/', 'Tools', '**/*', include_in_tools),
+    ('/', '$source', 'python.exe', is_not_debug, None),
+    ('/', '$source', 'pythonw.exe', is_not_debug, None),
+    ('/', '$source', 'venvlauncher.exe', is_not_debug, 'python.exe'),
+    ('/', '$source', 'venvwlauncher.exe', is_not_debug, 'pythonw.exe'),
+    ('/', '$source', 'python{}.dll'.format(sys.version_info.major), is_not_debug, None),
+    ('/', '$source', '{}.dll'.format(BASE_NAME), is_not_debug, None),
+    ('DLLs/', '$source', '*.pyd', is_not_debug, None),
+    ('DLLs/', '$source', '*.dll', is_not_python, None),
+    ('include/', 'include', '*.h', None, None),
+    ('include/', 'PC', 'pyconfig.h', None, None),
+    ('Lib/', 'Lib', '**/*', include_in_lib, None),
+    ('libs/', '$source', '*.lib', include_in_libs, None),
+    ('Tools/', 'Tools', '**/*', include_in_tools, None),
 ]
 
 FULL_LAYOUT_DEBUG = [
-    ('/', '$source', 'python_d.exe', is_debug),
-    ('/', '$source', 'pythonw_d.exe', is_debug),
-    ('/', '$source', 'python{}_d.dll'.format(sys.version_info.major), is_debug),
-    ('/', '$source', '{}_d.dll'.format(BASE_NAME), is_debug),
-    ('include/', 'include', '*.h', None),
-    ('include/', 'PC', 'pyconfig.h', None),
-    ('DLLs/', '$source', '*.pyd', is_debug),
-    ('DLLs/', '$source', '*.dll', is_not_python),
-    ('Lib/', 'Lib', '**/*', include_in_lib),
-    ('libs/', '$source', '*.lib', include_in_libs),
-    ('Tools/', 'Tools', '**/*', include_in_tools),
+    ('/', '$source', 'python_d.exe', is_debug, None),
+    ('/', '$source', 'pythonw_d.exe', is_debug, None),
+    ('/', '$source', 'venvlauncher_d.exe', is_debug, 'python_d.exe'),
+    ('/', '$source', 'venvwlauncher_d.exe', is_debug, 'pythonw_d.exe'),
+    ('/', '$source', 'python{}_d.dll'.format(sys.version_info.major), is_debug, None),
+    ('/', '$source', '{}_d.dll'.format(BASE_NAME), is_debug, None),
+    ('include/', 'include', '*.h', None, None),
+    ('include/', 'PC', 'pyconfig.h', None, None),
+    ('DLLs/', '$source', '*.pyd', is_debug, None),
+    ('DLLs/', '$source', '*.dll', is_not_python, None),
+    ('Lib/', 'Lib', '**/*', include_in_lib, None),
+    ('libs/', '$source', '*.lib', include_in_libs, None),
+    ('Tools/', 'Tools', '**/*', include_in_tools, None),
 ]
 
 if os.getenv('DOC_FILENAME'):
@@ -157,7 +161,7 @@ if os.getenv('DOC_FILENAME'):
 if os.getenv('VCREDIST_PATH'):
     FULL_LAYOUT.append(('/', os.getenv('VCREDIST_PATH'), 'vcruntime*.dll', None))
 
-def copy_to_layout(target, rel_sources):
+def copy_to_layout(target, rel_sources, target_new_name=None):
     count = 0
     
     if target.suffix.lower() == '.zip':
@@ -182,7 +186,11 @@ def copy_to_layout(target, rel_sources):
     else:
         for s, rel in rel_sources:
             
-            dest = target / rel
+            if target_new_name == None:
+                dest = target / rel
+            else:
+                dest = target / target_new_name
+
             try:
                 dest.parent.mkdir(parents=True)
             except FileExistsError:
@@ -262,14 +270,17 @@ def main():
         print ("full layout selected")
         layout = FULL_LAYOUT
 
-    for t, s, p, c in layout:
+    for t, s, p, c, altname in layout:
         if s == '$source':
             fs = source
         else:
             fs = repo / s
         print('fs = {}'.format(fs))
         files = rglob(fs, p, c, includeDebug)
-        copied = copy_to_layout(output / t.rstrip('/'), files)
+        if p.startswith('venv'):
+            copied = copy_to_layout(output / 'lib/venv/scripts/nt', files, altname)
+        else:
+            copied = copy_to_layout(output / t.rstrip('/'), files)
         print('Copied {} files'.format(copied))
 
     print("================================================================================")
