@@ -143,8 +143,8 @@ FULL_LAYOUT = [
 FULL_LAYOUT_DEBUG = [
     ('/', '$source', 'python_d.exe', is_debug),
     ('/', '$source', 'pythonw_d.exe', is_debug),
-    ('Lib/', '$source', 'venvlauncher_d.exe', is_not_debug),
-    ('Lib/', '$source', 'venvwlauncher_d.exe', is_not_debug),
+    ('Lib/', '$source', 'venvlauncher_d.exe', is_debug),
+    ('Lib/', '$source', 'venvwlauncher_d.exe', is_debug),
     ('/', '$source', 'python{}_d.dll'.format(sys.version_info.major), is_debug),
     ('/', '$source', '{}_d.dll'.format(BASE_NAME), is_debug),
     ('include/', 'include', '*.h', None),
