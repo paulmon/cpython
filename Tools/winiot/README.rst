@@ -94,3 +94,11 @@ Connect via `ssh <https://docs.microsoft.com/en-us/windows/iot-core/connect-your
     set PYTHONHOME=c:\python
 
     python -c "print ('Hello, ARM32!')"
+
+Installing pip
+--------------
+
+To install pip run the ensurepip module and then check for upgrades::
+
+    python -m ensurepip
+    python -m pip install --upgrade pip
