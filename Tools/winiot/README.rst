@@ -12,7 +12,7 @@ Prerequisites
 Get the CPython on Windows ARM32 code
 ------------
 
-Check out the code for ARM32 code::
+Check out the Windows ARM32 code for CPython and populate the external dependencies::
 
     git clone https://github.com/ms-iot/cpython.git
     cd cpython
@@ -22,15 +22,19 @@ Check out the code for ARM32 code::
 Get OpenSSL for Windows ARM32
 -----------------------------
 
-To get the OpenSSL binaries for Windows ARM32 you will need to build them yourself::
+Build OpenSSL binaries for Windows ARM32::
 
     cd ..
     git https://github.com/openssl/openssl.git
     cd openssl
+
+    REM the following command does not work in Powershell
     git am < ..\cpython\tools\winiot\OpenSSL-for-Windows-ARM32.patch
+
     "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsamd64_arm.bat"
-    perl Configure VC-WIN32 no-asm --prefix=e:\openssl --openssldir=arm32
+    perl Configure VC-WIN32 no-asm --prefix=d:\openssl_output --openssldir=arm32
     nmake
+
     REM copy files directly to cpython externals
     md ..\cpython\externals\openssl-bin-1.1.0i\arm32\include\openssl
     copy LICENSE ..\cpython\externals\openssl-bin-1.1.0i\arm32
@@ -60,7 +64,7 @@ Copy debug files to Windows IoT Core device and run tests
 Map a drive and copy the files::
 
     net use Q: \\<device ip address>\c$ /user:administrator
-    copy E:\code2\cpython\PCbuild\iot\arm32\Debug\ Q:\pythond
+    robocopy PCbuild\iot\arm32\Debug\ Q:\pythond
 
 Connect via `ssh <https://docs.microsoft.com/en-us/windows/iot-core/connect-your-device/ssh>`_ and run the standard library tests::
 
@@ -84,7 +88,7 @@ Copy release files to device
 Map a drive and copy the files::
 
     net use Q: \\<device ip address>\c$ /user:administrator
-    copy E:\code2\cpython\PCbuild\iot\arm32\Release\ Q:\python
+    robocopy PCbuild\iot\arm32\Release\ Q:\python
 
 Connect via `ssh <https://docs.microsoft.com/en-us/windows/iot-core/connect-your-device/ssh>`_ and test install::
 
