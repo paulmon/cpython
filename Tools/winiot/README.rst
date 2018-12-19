@@ -44,7 +44,8 @@ When running ``perl Configure`` ignore this error::
     install dmake.exe with the Perl Package Manager by running:
     ppm install dmake
 
-Configure the OpenSSL makefile for Windows ARM32::
+Configure the OpenSSL makefile for Windows ARM32
+Build OpenSSL by running ``nmake``::
 
     perl Configure VC-WIN32 no-asm
     nmake
@@ -64,6 +65,8 @@ Copy OpenSSL files for Windows ARM32  to cpython externals::
     copy libcrypto-1_1.pdb ..\cpython\externals\openssl-bin-1.1.0i\arm32
     copy libssl-1_1.dll ..\cpython\externals\openssl-bin-1.1.0i\arm32
     copy libssl-1_1.pdb ..\cpython\externals\openssl-bin-1.1.0i\arm32
+
+Return to the Python clone root::
     cd ..\cpython
 
 Build CPython and stage files for xcopy install
