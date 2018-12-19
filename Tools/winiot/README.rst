@@ -29,24 +29,32 @@ Build OpenSSL binaries for Windows ARM32::
     cd openssl
     git checkout -b win-arm32 OpenSSL_1_1_0i
 
-    REM apply patch required for successful ARM32 build
-    cmd /c "git am < ..\cpython\tools\winiot\OpenSSL-for-Windows-ARM32.patch"
+Start a build environment with vcvarsamd64_arm.bat and apply required patch::
 
     cmd /k "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvarsamd64_arm.bat"
+    
+    REM apply patch required for successful ARM32 build
+    git am < ..\cpython\tools\winiot\OpenSSL-for-Windows-ARM32.patch
 
-    REM When running **perl Configure** ignore this error:
-    REM   It looks like you don't have either nmake.exe or dmake.exe on your PATH,
-    REM   so you will not be able to execute the commands from a Makefile. You can
-    REM   install dmake.exe with the Perl Package Manager by running:
-    REM   ppm install dmake
+
+When running ``perl Configure`` ignore this error::
+
+    It looks like you don't have either nmake.exe or dmake.exe on your PATH,
+    so you will not be able to execute the commands from a Makefile. You can
+    install dmake.exe with the Perl Package Manager by running:
+    ppm install dmake
+
+Configure the OpenSSL makefile for Windows ARM32::
 
     perl Configure VC-WIN32 no-asm
     nmake
 
-    REM Exit cmd.exe started with **cmd /k** above
+Exit cmd.exe started with ``cmd /k`` above::
+
     exit
 
-    REM copy files directly to cpython externals
+Copy OpenSSL files for Windows ARM32  to cpython externals::
+
     md ..\cpython\externals\openssl-bin-1.1.0i\arm32\include\openssl
     copy LICENSE ..\cpython\externals\openssl-bin-1.1.0i\arm32
     copy include\openssl\*.h ..\cpython\externals\openssl-bin-1.1.0i\arm32\include\openssl
