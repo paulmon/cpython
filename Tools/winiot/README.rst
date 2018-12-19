@@ -44,8 +44,8 @@ When running ``perl Configure`` ignore this error::
     install dmake.exe with the Perl Package Manager by running:
     ppm install dmake
 
-Configure the OpenSSL makefile for Windows ARM32
-Build OpenSSL by running ``nmake``::
+| Configure the OpenSSL makefile for Windows ARM32
+| Build OpenSSL by running ``nmake``::
 
     perl Configure VC-WIN32 no-asm
     nmake
