@@ -5,7 +5,7 @@ Python for Windows ARM32
 Prerequisites
 -------------
 
-- `Microsoft Visual Studio 2017 <https://visualstudio.microsoft.com/downloads/>`_
+- `Microsoft Visual Studio 2017 <https://visualstudio.microsoft.com/downloads/>`_ (tested with version 15.9.4)
 - `Git for Windows <https://git-scm.com/downloads>`_
 - Perl 5 (for OpenSSL Configure)
 - `CPython 3.5 or newer (add Python to the path) <https://www.python.org/>`_
