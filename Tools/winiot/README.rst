@@ -8,6 +8,7 @@ Prerequisites
 - `Microsoft Visual Studio 2017 <https://visualstudio.microsoft.com/downloads/>`_
 - `Git for Windows <https://git-scm.com/downloads>`_
 - Perl 5 (for OpenSSL Configure)
+- CPython 3.5 or newer (add Python to the path)
 
 Get the CPython on Windows ARM32 code
 ------------
@@ -73,6 +74,8 @@ Return to the Python clone root::
 Build CPython and stage files for xcopy install
 -----------------------------------------------
 
+Building using Tools\winiot\build.bat requires CPython 3.5 or greater to be on the path.
+
 To build a retail image::
 
     Tools\winiot\build.bat -arm -r -c
@@ -86,8 +89,8 @@ Copy debug files to Windows IoT Core device and run tests
 
 Map a drive and copy the files::
 
-    net use Q: \\<device ip address>\c$ /user:administrator
-    robocopy PCbuild\iot\arm32\Debug\ Q:\pythond
+    net use Q: \\<device ip address>\c$ /user:\administrator
+    robocopy /S PCbuild\iot\arm32\Debug\ Q:\pythond
 
 Connect via `ssh <https://docs.microsoft.com/en-us/windows/iot-core/connect-your-device/ssh>`_ and run the standard library tests::
 
@@ -100,7 +103,7 @@ Connect via `ssh <https://docs.microsoft.com/en-us/windows/iot-core/connect-your
     set TEMP=C:\Windows\Temp
 
     REM Run tests
-    python -m test -j3
+    python_d -m test -j3
 
     REM Run ssl tests with network resources enabled
     python_d -Werror -bb -m test -u urlfetch -u network -v test_ssl
@@ -111,7 +114,7 @@ Copy release files to device
 Map a drive and copy the files::
 
     net use Q: \\<device ip address>\c$ /user:administrator
-    robocopy PCbuild\iot\arm32\Release\ Q:\python
+    robocopy /S PCbuild\iot\arm32\Release\ Q:\python
 
 Connect via `ssh <https://docs.microsoft.com/en-us/windows/iot-core/connect-your-device/ssh>`_ and test install::
 
