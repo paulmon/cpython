@@ -1,0 +1,25 @@
+From f3225799308146393ffd5a36ecef0c8ada8eb6dd Mon Sep 17 00:00:00 2001
+From: Paul Monson <paulmon@microsoft.com>
+Date: Mon, 17 Dec 2018 11:31:13 -0800
+Subject: [PATCH] build for Windows ARM32
+
+---
+ ms/uplink.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/ms/uplink.c b/ms/uplink.c
+index 7f7abfbe57..fe58e33648 100644
+--- a/ms/uplink.c
++++ b/ms/uplink.c
+@@ -125,6 +125,8 @@ void *OPENSSL_UplinkTable[] = {
+     lazy16, lazy17, lazy18, lazy19, lazy20,
+     lazy21, lazy22, lazy23, lazy24, lazy25,
+ };
++#elif defined(_M_ARM)
++void *OPENSSL_UplinkTable[26] = {0};
+ #endif
+ 
+ #ifdef SELFTEST
+-- 
+2.19.0.gvfs.1.34.gc7fb556
+
