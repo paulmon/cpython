@@ -8,7 +8,7 @@ Prerequisites
 - `Microsoft Visual Studio 2017 <https://visualstudio.microsoft.com/downloads/>`_
 - `Git for Windows <https://git-scm.com/downloads>`_
 - Perl 5 (for OpenSSL Configure)
-- CPython 3.5 or newer (add Python to the path)
+- `CPython 3.5 or newer (add Python to the path) <https://www.python.org/>`_
 
 Get the CPython on Windows ARM32 code
 ------------
