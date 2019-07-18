@@ -14,6 +14,9 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <mswsock.h>
+#if HAVE_AFUNIX_H
+#include <afunix.h>
+#endif
 
 #if defined(MS_WIN32) && !defined(MS_WIN64)
 #  define F_POINTER "k"
@@ -451,9 +454,10 @@ overlapped_BindLocal(PyObject *self, PyObject *args)
 {
     SOCKET Socket;
     int Family;
+    Py_buffer buffer;
     BOOL ret;
 
-    if (!PyArg_ParseTuple(args, F_HANDLE "i", &Socket, &Family))
+    if (!PyArg_ParseTuple(args, F_HANDLE "i|s*", &Socket, &Family, &buffer))
         return NULL;
 
     if (Family == AF_INET) {
@@ -470,6 +474,17 @@ overlapped_BindLocal(PyObject *self, PyObject *args)
         addr.sin6_port = 0;
         addr.sin6_addr = in6addr_any;
         ret = bind(Socket, (SOCKADDR*)&addr, sizeof(addr)) != SOCKET_ERROR;
+    } else if (Family == AF_UNIX) {
+        struct sockaddr_un addr;
+        if (buffer.len >= sizeof(addr.sun_path)) {
+            PyErr_SetString(PyExc_OSError,
+                "AF_UNIX path too long");
+            return NULL;
+        }
+        memset(&addr, 0, sizeof(addr));
+        addr.sun_family = AF_UNIX;
+        memcpy(addr.sun_path, buffer.buf, buffer.len);
+        ret = bind(Socket, (SOCKADDR*)& addr, sizeof(addr)) != SOCKET_ERROR;
     } else {
         PyErr_SetString(PyExc_ValueError, "expected tuple of length 2 or 4");
         return NULL;
